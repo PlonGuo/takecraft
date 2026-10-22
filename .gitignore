@@ -7,6 +7,8 @@ coverage/
 # Runtime workspaces and generated media
 .takecraft/
 .superpowers/
+.worktrees/
+.vitest/
 /artifacts/
 /renders/
 /test-results/
