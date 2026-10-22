@@ -1,0 +1,20 @@
+# Dependencies and generated builds
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Runtime workspaces and generated media
+.takecraft/
+.superpowers/
+/artifacts/
+/renders/
+/test-results/
+/playwright-report/
+*.log
+
+# Local environment and operating system files
+.env
+.env.*
+!.env.example
+.DS_Store
