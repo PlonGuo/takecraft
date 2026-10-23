@@ -24,3 +24,11 @@ test('allows tracks to share a boundary', () => {
   const p:any=fixture(); p.tracks=[{actor:'title',property:'x',start:0,end:1,from:0,to:10},{actor:'title',property:'x',start:1,end:2,from:10,to:20}];
   expect(validateProject(p).issues).toEqual([]);
 });
+test.each(['text','image','cursor'])('rejects %s as a parent instead of silently losing children',type=>{
+ const p:any=fixture();p.assets={shot:{type:'image',path:'shot.png'}};
+ p.actors=[{id:'parent',type,text:'父对象',asset:type==='image'?'shot':undefined},{id:'child',type:'text',text:'子对象',parent:'parent'}];
+ expect(validateProject(p).issues).toContainEqual(expect.objectContaining({code:'PARENT_TYPE',path:'actors.1.parent'}));
+});
+test.each(['surface','window','shape'])('allows %s to carry child objects',type=>{
+ const p:any=fixture();p.actors=[{id:'parent',type},{id:'child',type:'text',text:'子对象',parent:'parent'}];expect(validateProject(p).issues).toEqual([]);
+});

@@ -12,6 +12,9 @@ export async function renderFrames(input:RenderInput):Promise<FrameManifest>{
   const inspection=await session.inspect(frame/t.fps);if(inspection.issues.length)throw new TakecraftError(inspection.issues);
   const path=join(directory,String(frame).padStart(6,'0')+'.png');await session.page.screenshot({path,animations:'disabled'});paths.push(path);input.onCapture?.(frame);
  }}finally{await session.close();}
- const manifest={directory,paths,width:t.canvas.width,height:t.canvas.height,fps:t.fps,frameCount:t.frameCount,fingerprint:hash(stable({t,a})),lastTime:(t.frameCount-1)/t.fps};
+ // Prepared images hold PNG bytes in memory; hash their identity, not millions
+ // of individual byte keys through the JSON serializer.
+ const assets={...a,items:Object.fromEntries(Object.entries(a.items).map(([id,{image,...item}])=>[id,{...item,renderSha256:image?.sha256}]))};
+ const manifest={directory,paths,width:t.canvas.width,height:t.canvas.height,fps:t.fps,frameCount:t.frameCount,fingerprint:hash(stable({t,a:assets})),lastTime:(t.frameCount-1)/t.fps};
  await atomicJSON(join(directory,'frames.json'),manifest);return manifest;
 }

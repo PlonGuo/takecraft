@@ -28,3 +28,13 @@ test('reports missing glyphs instead of falling back to a machine font',async()=
   const p:any=fixture();p.actors[0].text='\uE000';
   await expect(prepareAssets(ProjectSchema.parse(p),await temp())).rejects.toMatchObject({issues:[expect.objectContaining({code:'FONT_GLYPH_MISSING'})]});
 });
+test('normalizes an animated bitmap to one fixed PNG frame',async()=>{
+ const d=await temp();
+ const gif=Buffer.from('47494638396101000100800000ffffff00000021f90400320000002c000000000100010000020244010021f90400320000002c00000000010001000002024c01003b','hex');
+ expect((await sharp(gif).metadata()).pages).toBe(2);
+ await writeFile(join(d,'animated.gif'),gif);
+ const p=ProjectSchema.parse({...fixture(),assets:{shot:{type:'image',path:'animated.gif'}}});
+ const image=(await prepareAssets(p,d)).items.shot;
+ expect(image.mime).toBe('image/png');expect((await sharp(image.image!.png).metadata()).pages).toBeUndefined();
+ expect([...await sharp(image.image!.png).raw().toBuffer()]).toEqual([255,255,255]);
+});

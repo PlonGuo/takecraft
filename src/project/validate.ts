@@ -17,6 +17,8 @@ export function validateProject(input:unknown):{project?:Project;issues:Issue[]}
   });
   const actorMap=new Map(p.actors.map(a=>[a.id,a]));
   p.actors.forEach((a,i)=>{
+    const container=a.parent?actorMap.get(a.parent):undefined;
+    if(container&&!['surface','window','shape'].includes(container.type))add('PARENT_TYPE',`actors.${i}.parent`,'Parent must be a surface, window or shape container');
     const visited=new Set([a.id]); let parent=a.parent;
     while(parent){if(visited.has(parent)){add('PARENT_CYCLE',`actors.${i}.parent`,parent);break;} visited.add(parent);const v=actorMap.get(parent);if(!v){add('UNKNOWN_ACTOR',`actors.${i}.parent`,parent);break;}parent=v.parent;}
   });

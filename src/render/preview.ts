@@ -5,11 +5,12 @@ import {artifact} from '../project/hash.js';
 import {openScene} from './browser.js';
 import {runtimeBundle,sceneHTML} from './serve.js';
 import type {RuntimeResources} from '../runtime/index.js';
+import {imageResource} from '../project/images.js';
 export async function createPreview(t:Timeline,a:AssetManifest,outDir:string,browser?:string):Promise<{html:Artifact;stills:Artifact[]}>{
  outDir=resolve(outDir);await mkdir(outDir,{recursive:true});
  const resources:RuntimeResources={images:{},fonts:[]};
  const uri=async(f:{path:string;mime:string})=>`data:${f.mime};base64,${(await readFile(f.path)).toString('base64')}`;
- for(const [id,item] of Object.entries(a.items))if(item.type==='image')resources.images[id]=await uri(item);
+ for(const [id,item] of Object.entries(a.items))if(item.type==='image'){const image=imageResource(item);resources.images[id]=`data:${image.type};base64,${image.body.toString('base64')}`;}
  for(const f of a.fonts)resources.fonts.push({url:await uri(f),unicodeRange:f.unicodeRange});
  const path=join(outDir,'preview.html');await writeFile(path,sceneHTML(t,resources,await runtimeBundle(),true,true));
  const s=await openScene(t,a,browser),stills:Artifact[]=[];

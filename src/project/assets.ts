@@ -1,7 +1,7 @@
 import {readFile,realpath,stat} from 'node:fs/promises';
 import {resolve,dirname} from 'node:path';
 import {createRequire} from 'node:module';
-import sharp from 'sharp';
+import {prepareImage} from './images.js';
 import {openSync} from 'fontkit';
 import {hash} from './hash.js';
 import {fail,type Project,type AssetManifest,type FontRecord} from './types.js';
@@ -20,8 +20,7 @@ export async function prepareAssets(p:Project,dir:string):Promise<AssetManifest>
       const path=await realpath(resolve(dir,a.path));if(!(await stat(path)).isFile())throw new Error('Not a file');
       const bytes=await readFile(path);const entry={path,type:a.type,sha256:hash(bytes),mime:'application/octet-stream'};
       if(a.type==='image'){
-        const info=await sharp(bytes).metadata();if(!info.width||!info.height)throw new Error('Missing image dimensions');
-        manifest.items[id]={...entry,width:info.width,height:info.height,mime:info.format==='svg'?'image/svg+xml':`image/${info.format==='jpg'?'jpeg':info.format}`};
+        manifest.items[id]={...entry,...await prepareImage(bytes)};
       }else if(a.type==='audio'){
         const info=await probe(path),duration=Number(info.format.duration);
         if(!info.streams.some(s=>s.codec_type==='audio')||!Number.isFinite(duration)||duration<=0)throw new Error('No valid audio stream');

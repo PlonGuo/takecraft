@@ -3,6 +3,7 @@ import {properties} from '../project/schema.js';
 import {sample} from './sample.js';
 import {cameraAt} from './camera.js';
 import {createActor} from '../components/registry.js';
+import {clipInspector} from './geometry.js';
 export type RuntimeResources={images:Record<string,string>;fonts:Array<{url:string;unicodeRange?:string}>};
 export function createRuntime(root:HTMLElement,t:Timeline,resources:RuntimeResources={images:{},fonts:[]}):Runtime{
   root.replaceChildren();Object.assign(root.style,{position:'relative',width:t.canvas.width+'px',height:t.canvas.height+'px',overflow:'hidden',background:t.theme.background});
@@ -26,13 +27,17 @@ export function createRuntime(root:HTMLElement,t:Timeline,resources:RuntimeResou
     const c=cameraAt(t,seconds);world.style.transform=`translate(${t.canvas.width/2}px,${t.canvas.height/2}px) rotate(${-c.rotation}deg) scale(${c.zoom}) translate(${-c.x}px,${-c.y}px)`;
   }
   async function inspect(seconds:number):Promise<FrameInspection>{
-    await seek(seconds);const boxes:FrameInspection['boxes']={},issues:FrameInspection['issues']=[],rr=root.getBoundingClientRect(),ratio=rr.width/t.canvas.width;
+    await seek(seconds);const boxes:FrameInspection['boxes']={},issues:FrameInspection['issues']=[],rr=root.getBoundingClientRect(),ratio=rr.width/t.canvas.width,isClipped=clipInspector();
     for(const a of t.actors){
-      const el=elements.get(a.id)!,r=el.getBoundingClientRect();let opacity=1,node:HTMLElement|null=el;
-      while(node&&node!==root){opacity*=Number(getComputedStyle(node).opacity);node=node.parentElement;}
+      const el=elements.get(a.id)!,r=el.getBoundingClientRect();let opacity=1,clipped=false,node:HTMLElement|null=el;
+      while(node&&node!==root){
+        const style=getComputedStyle(node);opacity*=Number(style.opacity);
+        if(node!==el&&isClipped(el,node))clipped=true;
+        node=node.parentElement;
+      }
       const b={x:(r.x-rr.x)/ratio,y:(r.y-rr.y)/ratio,width:r.width/ratio,height:r.height/ratio,opacity,overflow:a.type==='text'&&(el.scrollWidth>el.clientWidth+1||el.scrollHeight>el.clientHeight+1)};boxes[a.id]=b;
       if(b.overflow&&opacity>.01)issues.push({code:'TEXT_OVERFLOW',path:`actors.${a.id}`,message:`Text exceeds its box at ${seconds.toFixed(3)}s`,severity:'error'});
-      if(t.checks.inFrame.some(k=>k.actor===a.id&&seconds>=k.start&&seconds<k.end)&&(opacity<.01||b.x<-.5||b.y<-.5||b.x+b.width>t.canvas.width+.5||b.y+b.height>t.canvas.height+.5))issues.push({code:'OUT_OF_FRAME',path:`actors.${a.id}`,message:`Required object leaves frame at ${seconds.toFixed(3)}s`,severity:'error'});
+      if(t.checks.inFrame.some(k=>k.actor===a.id&&seconds>=k.start&&seconds<k.end)&&(clipped||opacity<.01||b.x<-.5||b.y<-.5||b.x+b.width>t.canvas.width+.5||b.y+b.height>t.canvas.height+.5))issues.push({code:'OUT_OF_FRAME',path:`actors.${a.id}`,message:`Required object is clipped or leaves frame at ${seconds.toFixed(3)}s`,severity:'error'});
     }
     return {time:seconds,boxes,issues};
   }

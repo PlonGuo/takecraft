@@ -5,6 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {build} from 'esbuild';
 import type {AssetManifest,Timeline} from '../project/types.js';
 import type {RuntimeResources} from '../runtime/index.js';
+import {imageResource} from '../project/images.js';
 export async function runtimeBundle(){
   const js=fileURLToPath(new URL('../runtime/browser-entry.js',import.meta.url));
   const entry=existsSync(js)?js:js.replace(/\.js$/,'.ts');
@@ -17,7 +18,7 @@ export function sceneHTML(timeline:Timeline,resources:RuntimeResources,script:st
 export async function serveScene(t:Timeline,a:AssetManifest){
   const routes=new Map<string,{body:Buffer|string;type:string}>();
   const resources:RuntimeResources={images:{},fonts:[]};
-  for(const [id,item] of Object.entries(a.items)){if(item.type!=='image')continue;const url='/asset/'+encodeURIComponent(id);routes.set(url,{body:await readFile(item.path),type:item.mime});resources.images[id]=url;}
+  for(const [id,item] of Object.entries(a.items)){if(item.type!=='image')continue;const url='/asset/'+encodeURIComponent(id);routes.set(url,imageResource(item));resources.images[id]=url;}
   for(const [i,font] of a.fonts.entries()){const url='/font/'+i;routes.set(url,{body:await readFile(font.path),type:font.mime});resources.fonts.push({url,unicodeRange:font.unicodeRange});}
   routes.set('/runtime.js',{body:await runtimeBundle(),type:'text/javascript'});routes.set('/',{body:sceneHTML(t,resources,'/runtime.js'),type:'text/html; charset=utf-8'});
   const server=createServer((req,res)=>{const entry=routes.get(req.url??'');if(!entry||!['GET','HEAD'].includes(req.method??'')){res.writeHead(404);res.end();return;}res.writeHead(200,{'Content-Type':entry.type,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(req.method==='HEAD'?undefined:entry.body);});
