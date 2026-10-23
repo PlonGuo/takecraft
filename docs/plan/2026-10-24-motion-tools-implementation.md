@@ -91,6 +91,6 @@
 
 2026-10-24：六项任务完成。实施结束时变更保留在 feat/motion-themes，未提交、未推送；随后用户明确授权保存至 GitHub。最终 typecheck/build、26 文件 106 项测试及 diff whitespace 检查通过。独立整体验收提出的两项 Important 已经过失败回归、一次定向修复及全套复验。样片与证据见计划目录 README。
 
-本机 gstack 缺专用浏览器，播放验收改用已有 Chrome 并成功。已检查关键帧与连续采样帧、实际播放与 seek；未独立完成听感验收，不将自动检查等同于主观完美。保留 scratch ledger，因为本轮未提交，不能按已归档入 Git 的前提删除唯一工作记录。
+本机 gstack 缺专用浏览器，播放验收改用已有 Chrome 并成功。已检查关键帧与连续采样帧、实际播放与 seek；未独立完成听感验收，不将自动检查等同于主观完美。实施结束时保留了 scratch ledger，因为当时尚未提交，不能按已归档入 Git 的前提删除唯一工作记录；后续 GitHub 保存状态见[计划与进度](README.md)。
 
 GitHub 保存前复验：typecheck、build、26 文件 106 项测试通过（123.31 秒），独立只读审阅无阻塞。此次保存源码分支供用户试用，不发布安装包、不合并 main；沿用项目现有 package.json 版本与 docs/plan 进度约定，不另建 VERSION 或重复任务清单。
