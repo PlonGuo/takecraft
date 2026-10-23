@@ -3,8 +3,9 @@ import {ActorSchema,type Actor} from '../project/schema.js';
 const definitions={text:'中文文字与标题，支持打字揭示',image:'本地图片，contain 或 cover',surface:'持续存在的可变形容器',window:'带标题栏的产品窗口',cursor:'指针图形',shape:'矩形或圆角图形'};
 export const listComponents=()=>Object.entries(definitions).map(([type,description])=>({type,description,version:1}));
 export function describeComponent(type:string){
-  if(!(type in definitions))throw new Error(`Unknown component: ${type}`);
-  return {...listComponents().find(c=>c.type===type),schema:z.toJSONSchema(ActorSchema,{io:'input'}),example:{id:'main',type,x:300,y:250,width:800,height:400}};
+  if(!Object.hasOwn(definitions,type))throw new Error(`Unknown component: ${type}`);
+  const schema=ActorSchema.extend({type:z.literal(type),...(type==='text'?{text:ActorSchema.shape.text.unwrap()}:{}),...(type==='image'?{asset:ActorSchema.shape.asset.unwrap()}:{} )});
+  return {...listComponents().find(c=>c.type===type),schema:z.toJSONSchema(schema,{io:'input'}),example:{id:'main',type,x:300,y:250,width:800,height:400,...(type==='text'?{text:'让想法成为作品'}:{}),...(type==='image'?{asset:'screenshot'}:{})}};
 }
 export function createActor(a:Actor,ink:string,accent:string):HTMLElement{
   const el=document.createElement(a.type==='image'?'img':'div');el.dataset.actor=a.id;

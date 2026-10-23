@@ -1,0 +1,742 @@
+{
+  "schemaVersion": 1,
+  "id": "qingzhou",
+  "title": "轻舟 · 从想法到下一步",
+  "duration": 15,
+  "canvas": {
+    "width": 1920,
+    "height": 1080
+  },
+  "fps": 30,
+  "theme": {
+    "background": "#f3f1e9",
+    "ink": "#223e35",
+    "accent": "#347c66"
+  },
+  "assets": {
+    "screenshot": {
+      "path": "assets/workspace.svg",
+      "type": "image",
+      "source": "Takecraft original fictional UI, CC0-1.0"
+    }
+  },
+  "actors": [
+    {
+      "id": "brand",
+      "type": "text",
+      "text": "轻舟 / QINGZHOU",
+      "x": 140,
+      "y": 90,
+      "width": 750,
+      "height": 60,
+      "fontSize": 30,
+      "fontWeight": 700
+    },
+    {
+      "id": "edition",
+      "type": "text",
+      "text": "从想法到下一步",
+      "x": 1370,
+      "y": 98,
+      "width": 410,
+      "height": 48,
+      "fontSize": 22,
+      "align": "right",
+      "color": "#65776e"
+    },
+    {
+      "id": "intro",
+      "type": "text",
+      "text": "让想法，顺流成章。",
+      "x": 210,
+      "y": 245,
+      "width": 1500,
+      "height": 140,
+      "fontSize": 88,
+      "align": "center",
+      "fontWeight": 700
+    },
+    {
+      "id": "main-surface",
+      "type": "surface",
+      "x": 380,
+      "y": 460,
+      "width": 1160,
+      "height": 150,
+      "radius": 75,
+      "background": "#ffffff",
+      "clip": true
+    },
+    {
+      "id": "prompt",
+      "type": "text",
+      "text": "记下一闪而过的灵感…",
+      "x": 60,
+      "y": 48,
+      "width": 980,
+      "height": 65,
+      "fontSize": 38,
+      "parent": "main-surface",
+      "color": "#70877b",
+      "reveal": 0
+    },
+    {
+      "id": "shot",
+      "type": "image",
+      "parent": "main-surface",
+      "asset": "screenshot",
+      "x": 0,
+      "y": 0,
+      "width": 1320,
+      "height": 680,
+      "opacity": 0
+    },
+    {
+      "id": "app-label",
+      "type": "text",
+      "text": "轻舟工作台",
+      "x": 38,
+      "y": 28,
+      "width": 350,
+      "height": 55,
+      "fontSize": 26,
+      "parent": "main-surface",
+      "opacity": 0,
+      "fontWeight": 700
+    },
+    {
+      "id": "app-title",
+      "type": "text",
+      "text": "想法收件箱",
+      "x": 270,
+      "y": 114,
+      "width": 700,
+      "height": 80,
+      "fontSize": 46,
+      "parent": "main-surface",
+      "opacity": 0,
+      "fontWeight": 700
+    },
+    {
+      "id": "card-one",
+      "type": "text",
+      "text": "记录灵感",
+      "x": 306,
+      "y": 254,
+      "width": 400,
+      "height": 52,
+      "fontSize": 30,
+      "parent": "main-surface",
+      "opacity": 0,
+      "fontWeight": 700
+    },
+    {
+      "id": "card-two",
+      "type": "text",
+      "text": "整理思路",
+      "x": 786,
+      "y": 254,
+      "width": 400,
+      "height": 52,
+      "fontSize": 30,
+      "parent": "main-surface",
+      "opacity": 0,
+      "fontWeight": 700
+    },
+    {
+      "id": "app-next",
+      "type": "text",
+      "text": "下一步，开始创作",
+      "x": 306,
+      "y": 530,
+      "width": 800,
+      "height": 65,
+      "fontSize": 34,
+      "parent": "main-surface",
+      "opacity": 0,
+      "color": "#347c66",
+      "fontWeight": 700
+    },
+    {
+      "id": "brand-mark",
+      "type": "shape",
+      "parent": "main-surface",
+      "x": 76,
+      "y": 76,
+      "width": 88,
+      "height": 88,
+      "radius": 28,
+      "rotation": -12,
+      "background": "#347c66",
+      "opacity": 0
+    },
+    {
+      "id": "pointer",
+      "type": "cursor",
+      "x": 1500,
+      "y": 830,
+      "width": 38,
+      "height": 54,
+      "opacity": 0,
+      "background": "#223e35"
+    },
+    {
+      "id": "middle",
+      "type": "text",
+      "text": "从碎片，到清晰的下一步",
+      "x": 260,
+      "y": 118,
+      "width": 1400,
+      "height": 95,
+      "fontSize": 52,
+      "align": "center",
+      "opacity": 0,
+      "fontWeight": 700
+    },
+    {
+      "id": "outro",
+      "type": "text",
+      "text": "轻舟",
+      "x": 660,
+      "y": 660,
+      "width": 600,
+      "height": 110,
+      "fontSize": 76,
+      "align": "center",
+      "opacity": 0,
+      "fontWeight": 700
+    },
+    {
+      "id": "tagline",
+      "type": "text",
+      "text": "把灵感，带向下一步。",
+      "x": 460,
+      "y": 800,
+      "width": 1000,
+      "height": 78,
+      "fontSize": 38,
+      "align": "center",
+      "opacity": 0
+    },
+    {
+      "id": "cta",
+      "type": "text",
+      "text": "从一条想法开始",
+      "x": 660,
+      "y": 900,
+      "width": 600,
+      "height": 65,
+      "fontSize": 26,
+      "align": "center",
+      "opacity": 0,
+      "color": "#347c66"
+    },
+    {
+      "id": "disclosure",
+      "type": "text",
+      "text": "虚构产品 · Takecraft 原创示例",
+      "x": 140,
+      "y": 993,
+      "width": 1000,
+      "height": 42,
+      "fontSize": 20,
+      "color": "#6e7f73"
+    }
+  ],
+  "tracks": [
+    {
+      "actor": "prompt",
+      "property": "reveal",
+      "start": 0.2,
+      "end": 1.6,
+      "from": 0,
+      "to": 1,
+      "ease": "linear"
+    },
+    {
+      "actor": "prompt",
+      "property": "opacity",
+      "start": 2.1,
+      "end": 2.5,
+      "from": 1,
+      "to": 0,
+      "ease": "smooth"
+    },
+    {
+      "actor": "intro",
+      "property": "opacity",
+      "start": 2,
+      "end": 2.5,
+      "from": 1,
+      "to": 0,
+      "ease": "smooth"
+    },
+    {
+      "actor": "pointer",
+      "property": "opacity",
+      "start": 1.1,
+      "end": 1.4,
+      "from": 0,
+      "to": 1,
+      "ease": "smooth"
+    },
+    {
+      "actor": "pointer",
+      "property": "x",
+      "start": 1.1,
+      "end": 1.8,
+      "from": 1500,
+      "to": 1370,
+      "ease": "smooth"
+    },
+    {
+      "actor": "pointer",
+      "property": "y",
+      "start": 1.1,
+      "end": 1.8,
+      "from": 830,
+      "to": 530,
+      "ease": "smooth"
+    },
+    {
+      "actor": "pointer",
+      "property": "opacity",
+      "start": 2,
+      "end": 2.4,
+      "from": 1,
+      "to": 0,
+      "ease": "smooth"
+    },
+    {
+      "actor": "main-surface",
+      "property": "x",
+      "start": 2.6,
+      "end": 3.6,
+      "from": 380,
+      "to": 300,
+      "ease": "smooth"
+    },
+    {
+      "actor": "main-surface",
+      "property": "y",
+      "start": 2.6,
+      "end": 3.6,
+      "from": 460,
+      "to": 250,
+      "ease": "smooth"
+    },
+    {
+      "actor": "main-surface",
+      "property": "width",
+      "start": 2.6,
+      "end": 3.6,
+      "from": 1160,
+      "to": 1320,
+      "ease": "smooth"
+    },
+    {
+      "actor": "main-surface",
+      "property": "height",
+      "start": 2.6,
+      "end": 3.6,
+      "from": 150,
+      "to": 680,
+      "ease": "smooth"
+    },
+    {
+      "actor": "main-surface",
+      "property": "radius",
+      "start": 2.6,
+      "end": 3.6,
+      "from": 75,
+      "to": 28,
+      "ease": "smooth"
+    },
+    {
+      "actor": "shot",
+      "property": "opacity",
+      "start": 3.5,
+      "end": 4,
+      "from": 0,
+      "to": 1,
+      "ease": "smooth"
+    },
+    {
+      "actor": "shot",
+      "property": "opacity",
+      "start": 9.7,
+      "end": 10.1,
+      "from": 1,
+      "to": 0,
+      "ease": "smooth"
+    },
+    {
+      "actor": "app-label",
+      "property": "opacity",
+      "start": 3.5,
+      "end": 4,
+      "from": 0,
+      "to": 1,
+      "ease": "smooth"
+    },
+    {
+      "actor": "app-label",
+      "property": "opacity",
+      "start": 9.7,
+      "end": 10.1,
+      "from": 1,
+      "to": 0,
+      "ease": "smooth"
+    },
+    {
+      "actor": "app-title",
+      "property": "opacity",
+      "start": 3.5,
+      "end": 4,
+      "from": 0,
+      "to": 1,
+      "ease": "smooth"
+    },
+    {
+      "actor": "app-title",
+      "property": "opacity",
+      "start": 9.7,
+      "end": 10.1,
+      "from": 1,
+      "to": 0,
+      "ease": "smooth"
+    },
+    {
+      "actor": "card-one",
+      "property": "opacity",
+      "start": 3.5,
+      "end": 4,
+      "from": 0,
+      "to": 1,
+      "ease": "smooth"
+    },
+    {
+      "actor": "card-one",
+      "property": "opacity",
+      "start": 9.7,
+      "end": 10.1,
+      "from": 1,
+      "to": 0,
+      "ease": "smooth"
+    },
+    {
+      "actor": "card-two",
+      "property": "opacity",
+      "start": 3.5,
+      "end": 4,
+      "from": 0,
+      "to": 1,
+      "ease": "smooth"
+    },
+    {
+      "actor": "card-two",
+      "property": "opacity",
+      "start": 9.7,
+      "end": 10.1,
+      "from": 1,
+      "to": 0,
+      "ease": "smooth"
+    },
+    {
+      "actor": "app-next",
+      "property": "opacity",
+      "start": 3.5,
+      "end": 4,
+      "from": 0,
+      "to": 1,
+      "ease": "smooth"
+    },
+    {
+      "actor": "app-next",
+      "property": "opacity",
+      "start": 9.7,
+      "end": 10.1,
+      "from": 1,
+      "to": 0,
+      "ease": "smooth"
+    },
+    {
+      "actor": "middle",
+      "property": "opacity",
+      "start": 3.3,
+      "end": 3.8,
+      "from": 0,
+      "to": 1,
+      "ease": "smooth"
+    },
+    {
+      "actor": "middle",
+      "property": "opacity",
+      "start": 4.5,
+      "end": 4.9,
+      "from": 1,
+      "to": 0,
+      "ease": "smooth"
+    },
+    {
+      "actor": "brand",
+      "property": "opacity",
+      "start": 4.5,
+      "end": 4.9,
+      "from": 1,
+      "to": 0,
+      "ease": "smooth"
+    },
+    {
+      "actor": "brand",
+      "property": "opacity",
+      "start": 11.5,
+      "end": 12,
+      "from": 0,
+      "to": 1,
+      "ease": "smooth"
+    },
+    {
+      "actor": "edition",
+      "property": "opacity",
+      "start": 4.5,
+      "end": 4.9,
+      "from": 1,
+      "to": 0,
+      "ease": "smooth"
+    },
+    {
+      "actor": "edition",
+      "property": "opacity",
+      "start": 11.5,
+      "end": 12,
+      "from": 0,
+      "to": 1,
+      "ease": "smooth"
+    },
+    {
+      "actor": "disclosure",
+      "property": "opacity",
+      "start": 4.5,
+      "end": 4.9,
+      "from": 1,
+      "to": 0,
+      "ease": "smooth"
+    },
+    {
+      "actor": "disclosure",
+      "property": "opacity",
+      "start": 11.5,
+      "end": 12,
+      "from": 0,
+      "to": 1,
+      "ease": "smooth"
+    },
+    {
+      "actor": "main-surface",
+      "property": "x",
+      "start": 10.1,
+      "end": 11.3,
+      "from": 300,
+      "to": 840,
+      "ease": "smooth"
+    },
+    {
+      "actor": "main-surface",
+      "property": "y",
+      "start": 10.1,
+      "end": 11.3,
+      "from": 250,
+      "to": 350,
+      "ease": "smooth"
+    },
+    {
+      "actor": "main-surface",
+      "property": "width",
+      "start": 10.1,
+      "end": 11.3,
+      "from": 1320,
+      "to": 240,
+      "ease": "smooth"
+    },
+    {
+      "actor": "main-surface",
+      "property": "height",
+      "start": 10.1,
+      "end": 11.3,
+      "from": 680,
+      "to": 240,
+      "ease": "smooth"
+    },
+    {
+      "actor": "main-surface",
+      "property": "radius",
+      "start": 10.1,
+      "end": 11.3,
+      "from": 28,
+      "to": 72,
+      "ease": "smooth"
+    },
+    {
+      "actor": "brand-mark",
+      "property": "opacity",
+      "start": 11.0,
+      "end": 11.5,
+      "from": 0,
+      "to": 1,
+      "ease": "smooth"
+    },
+    {
+      "actor": "outro",
+      "property": "opacity",
+      "start": 11.3,
+      "end": 11.9,
+      "from": 0,
+      "to": 1,
+      "ease": "smooth"
+    },
+    {
+      "actor": "tagline",
+      "property": "opacity",
+      "start": 11.7,
+      "end": 12.299999999999999,
+      "from": 0,
+      "to": 1,
+      "ease": "smooth"
+    },
+    {
+      "actor": "cta",
+      "property": "opacity",
+      "start": 12.1,
+      "end": 12.7,
+      "from": 0,
+      "to": 1,
+      "ease": "smooth"
+    }
+  ],
+  "camera": [
+    {
+      "time": 0,
+      "x": 960,
+      "y": 540,
+      "zoom": 1
+    },
+    {
+      "time": 4.8,
+      "x": 960,
+      "y": 540,
+      "zoom": 1
+    },
+    {
+      "time": 6.2,
+      "x": 1030,
+      "y": 560,
+      "zoom": 1.12
+    },
+    {
+      "time": 8.5,
+      "x": 1030,
+      "y": 560,
+      "zoom": 1.12
+    },
+    {
+      "time": 9.7,
+      "x": 960,
+      "y": 540,
+      "zoom": 1
+    }
+  ],
+  "beats": [
+    {
+      "time": 0,
+      "label": "一句灵感"
+    },
+    {
+      "time": 4,
+      "label": "展开工作台"
+    },
+    {
+      "time": 7,
+      "label": "找到下一步"
+    },
+    {
+      "time": 12,
+      "label": "收拢为品牌"
+    }
+  ],
+  "carries": [
+    {
+      "time": 2.6,
+      "actor": "main-surface"
+    },
+    {
+      "time": 6.2,
+      "actor": "main-surface"
+    },
+    {
+      "time": 10,
+      "actor": "main-surface"
+    }
+  ],
+  "audio": {
+    "events": [
+      {
+        "time": 1.8,
+        "kind": "click",
+        "gain": 0.25
+      },
+      {
+        "time": 2.7,
+        "kind": "air",
+        "gain": 0.25
+      },
+      {
+        "time": 3.5,
+        "kind": "land",
+        "gain": 0.2
+      },
+      {
+        "time": 5.1,
+        "kind": "air",
+        "gain": 0.2
+      },
+      {
+        "time": 11.2,
+        "kind": "land",
+        "gain": 0.25
+      }
+    ],
+    "clips": []
+  },
+  "captions": [
+    {
+      "start": 0,
+      "end": 3,
+      "text": "记下一闪而过的灵感。"
+    },
+    {
+      "start": 3,
+      "end": 8,
+      "text": "把零散的想法，整理成清晰的计划。"
+    },
+    {
+      "start": 8,
+      "end": 11.5,
+      "text": "找到下一步，让创作持续向前。"
+    },
+    {
+      "start": 11.5,
+      "end": 15,
+      "text": "轻舟。把灵感，带向下一步。"
+    }
+  ],
+  "checks": {
+    "inFrame": [
+      {
+        "actor": "main-surface",
+        "start": 0,
+        "end": 15
+      }
+    ]
+  }
+}
