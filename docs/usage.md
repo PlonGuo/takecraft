@@ -12,11 +12,26 @@ Takecraft 把一份制作清单变成视频。像一份给制作团队的拍摄�
 
 Playwright 是控制浏览器的自动化工具：它等待字体和图片加载完毕，按每秒 30 次定位并截图。15 秒共生成 450 张图，再交给音视频处理工具 FFmpeg 编码、混音和合成。质量检查验证尺寸、帧数、解码、音轨、文字溢出与指定对象的可见性；节奏和美感仍需看成片判断。
 
-M1 没有使用 Motion、Framer Motion、React 或 Remotion。当前运行时自行采样属性；第三方动画库可以作为后续的曲线或编排实现，但仍需保持随机定位和逐帧导出一致。仅安装库不会自动改善排版、运动节奏和主题设计。
+当前已接入 Motion 14.6.0：它提供弹簧曲线与错峰时间计算，Takecraft 把动作展开成属性轨道，并在指定时刻采样；不用 React 或实时播放循环。旧 M1 命名曲线保留原行为。曲线解决运动速度变化，配方和主题另外负责排版与节奏。
 
 自检：同一容器改变尺寸与直接切换两张画面有什么不同？为什么导出时需要直接计算某一秒的画面？换音乐为什么可以复用原来的截图？
 
 ## 工作目录与命令
+
+普通产品片先写简短需求（brief），再让工具生成制作清单。它像菜单点单：你给内容与风格，配方负责安排制作步骤。否则每条片都要重新编写几十条属性轨道，Agent 负担和出错机会都会增加。
+
+```sh
+pnpm --silent takecraft catalog --kind all --json
+pnpm --silent takecraft describe brief --json
+pnpm --silent takecraft compose examples/product-launch-v2/brief.json "我的影片" --theme midnight --json
+pnpm --silent takecraft build "我的影片/project.json" --json
+```
+
+需求包含品牌、主标题、标语、2–3 个功能点和行动文案；可选 `screenshot`、`music` 按需求文件所在目录解析，复制到新作品目录。主题 paper / midnight / editorial 同时改变排版、配色、表面与动作风格；`style` 可单独指定 calm / snappy / playful。文案不接受手动换行，模板根据宽度自动折行；多行精排仍可编辑原始 project。字段上限用 `describe brief` 查询，非法输入不会截字后继续。当前配方固定 15 秒，音乐按片长截取并淡入淡出，不自动配音。
+
+输出 `brief.json` 保存需求，`project.json` 保存生成结果；之后可以编辑 project 精调，修改 brief 后应 compose 到新目录。两者不会自动双向同步。compose 返回的 statistics 是规范化配置字节数及动作/轨道数量，不能当作 Agent token 节省率。
+
+从其他目录用 `node /absolute/path/takecraft/scripts/run.mjs ...` 调用即可；无需切回仓库。脚本定位工具和依赖，同时保留调用者的相对路径。全局 Skill 只需以后引用这个入口，不必把渲染器复制进 Codex 目录。
 
 命令在工具仓库运行，作品可以保存在其他本地目录。含空格或中文的路径加引号。初始化只接受新目录；现有目录绝不覆盖。
 
@@ -36,7 +51,9 @@ pnpm --silent takecraft status "/absolute/path/我的影片" --json
 
 [清单约定](../skills/takecraft/references/project.md)解释素材、对象、轨道、镜头和声音；精确参数按需用 `describe TYPE --json` 或 `describe project --json` 获取。
 
-持续对象使用稳定 id。比如输入框展开为工作台再收拢成标志，改变的是同一容器的位置、尺寸与圆角。M1 使用显式属性轨道，不提供动作预设展开器。六种组件共用参数协议，目前扩展组件需要修改本地源码与对应 schema，不支持任意远程插件。
+持续对象使用稳定 id。比如输入框展开为工作台再收拢成标志，改变的是同一容器的位置、尺寸与圆角。可用 `actions` 声明 enter（入场）、exit（退场）、morph（变形）、reveal（文字揭示）、focus（镜头）；用 `describe action:enter --json` 等按需查询参数与示例。原始 `tracks` 仍可精调，但与动作控制同一属性时不能重叠。六种组件共用参数协议，目前扩展组件需要修改本地源码与对应 schema，不支持任意远程插件。
+
+动作按 at 排序展开；入场前隐藏，退场后保持隐藏，再入场恢复之前的非退场布局。reveal 只改变文字揭示进度，可与入场同时使用。focus 只能定位根对象在动作开始时的中心或画布中心，不跟随之后的对象移动；不可与手写 camera 混用。弹簧可越过目标形成回弹，但透明度、揭示进度和正尺寸仍由运行时约束，结束时精确落到目标。
 
 同一属性的动作区间不能重叠。时长必须对应整数帧；15 秒为 450 帧，最后一帧时间是 14.9667 秒。中文字体默认随依赖安装，缺字会返回具体字符。正文和标题是纯文本，不执行 HTML。
 
