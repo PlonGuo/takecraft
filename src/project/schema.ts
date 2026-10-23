@@ -1,10 +1,11 @@
 import { z } from 'zod';
+import {ActionSchema} from '../motion/schema.js';
 const n = z.number().finite();
 const id = z.string().regex(/^[a-zA-Z][a-zA-Z0-9_-]*$/);
 const color = z.string().regex(/^#[0-9a-fA-F]{6}$/);
 const text = z.string().refine(s => s.trim().length > 0, 'Text must not be blank');
 export const properties = ['x','y','width','height','scale','rotation','opacity','radius','reveal'] as const;
-export const EaseSchema = z.enum(['linear','smooth','out','spring']).default('smooth');
+export const EaseSchema = z.union([z.enum(['linear','smooth','out','spring']),z.object({type:z.literal('spring'),bounce:n.min(0).max(.6).default(.14)}).strict()]).default('smooth');
 export const ActorSchema = z.object({
   id, type: z.enum(['text','image','surface','window','cursor','shape']), parent: id.optional(),
   text: text.optional(), asset: id.optional(), x: n.default(0), y: n.default(0),
@@ -14,6 +15,7 @@ export const ActorSchema = z.object({
   fontSize: n.positive().default(64), fontWeight: z.union([z.literal(400),z.literal(700)]).default(400),
   align: z.enum(['left','center','right']).default('left'), padding: n.nonnegative().default(0),
   fit: z.enum(['contain','cover']).default('contain'), clip: z.boolean().default(false),
+  borderColor:color.optional(),borderWidth:n.min(0).max(8).optional(),shadow:z.enum(['none','soft','float','hard','glow']).optional(),letterSpacing:n.min(-5).max(20).default(0),
 }).strict();
 export const TrackSchema = z.object({
   actor: id, property: z.enum(properties), start: n.nonnegative(), end: n.nonnegative(),
@@ -28,6 +30,7 @@ export const ProjectSchema = z.object({
   theme: z.object({ background: color, ink: color, accent: color, font: id.optional() }).strict(),
   assets: z.record(id,z.object({path:text,type:z.enum(['image','audio','font']),source:z.string().optional()}).strict()).default({}),
   actors: z.array(ActorSchema).min(1), tracks: z.array(TrackSchema).default([]), camera:z.array(CameraSchema).default([]),
+  actions:z.array(ActionSchema).max(200).default([]),
   beats:z.array(z.object({time:n.nonnegative(),label:text})).default([]),
   carries:z.array(z.object({time:n.nonnegative(),actor:id})).default([]),
   audio:z.object({

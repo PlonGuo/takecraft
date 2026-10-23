@@ -1,9 +1,18 @@
 import {ProjectSchema,type Project} from './schema.js';
 import type {Issue} from './types.js';
+import {expandActions} from '../motion/presets.js';
 export function validateProject(input:unknown):{project?:Project;issues:Issue[]} {
   const parsed=ProjectSchema.safeParse(input);
   if(!parsed.success) return {issues:parsed.error.issues.map(e=>({code:'SCHEMA_INVALID',path:e.path.join('.')||'project',message:e.message,severity:'error'}))};
-  const p=parsed.data,issues:Issue[]=[];
+  const p=parsed.data,issues=inspectProject(p);
+  if(issues.length)return {issues};
+  const expanded=expandActions(p);
+  if(expanded.issues.length)return {issues:expanded.issues};
+  const resolvedIssues=inspectProject({...p,actors:expanded.actors,tracks:expanded.tracks,camera:expanded.camera});
+  return resolvedIssues.length?{issues:resolvedIssues}:{project:p,issues:[]};
+}
+function inspectProject(p:Project):Issue[]{
+  const issues:Issue[]=[];
   const add=(code:string,path:string,message:string)=>issues.push({code,path,message,severity:'error'});
   const ids=new Set<string>();
   if(Math.abs(p.duration*p.fps-Math.round(p.duration*p.fps))>1e-6) add('DURATION_NOT_FRAME_ALIGNED','duration','Duration must be an exact number of frames');
@@ -37,5 +46,5 @@ export function validateProject(input:unknown):{project?:Project;issues:Issue[]}
   p.audio.clips.forEach((c,i)=>{interval(c.start,c.end,`audio.clips.${i}`);if(p.assets[c.asset]?.type!=='audio')add('ASSET_TYPE',`audio.clips.${i}.asset`,'Audio asset required');});
   p.captions.forEach((c,i)=>{interval(c.start,c.end,`captions.${i}`);if(p.captions.slice(0,i).some(o=>o.start<c.end&&c.start<o.end))add('CAPTION_OVERLAP',`captions.${i}`,'Captions overlap');});
   if(p.theme.font&&p.assets[p.theme.font]?.type!=='font')add('ASSET_TYPE','theme.font','Font asset required');
-  return issues.length?{issues}:{project:p,issues};
+  return issues;
 }
