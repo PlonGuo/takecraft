@@ -100,6 +100,7 @@ v0 已发布：[Takecraft v0 · v0.1.1](https://github.com/PlonGuo/takecraft/rel
 - 独立 Skill 的固定版本入口已实现。真实 npm 子进程验证同名项目/全局命令隔离、中文空格/字面参数、离线缓存及缺缓存失败、中断传播；3/3 通过。Skill validator 通过。
 - 发布策略与 Actions 已实现：同一 tarball、pending→下载校验和出片→latest→tag/Release；内容/提交冲突拒绝，旧任务不回退 latest。6/6 策略与恢复测试通过，actionlint 通过。
 - npm/pnpm 实际安装均已出片；发布脚本 dry-run 通过，下载后使用的 smoke 脚本本地完成 450 帧出片。
-- 正在全套复验与独立审阅，尚未推送本轮实现、尚未发布 npm v0.2.0。下一步：审阅修复→GitHub CI→dev/main 发布→首次 npm 包及可信来源设置→公开安装/Codex 验收→清理临时产物。
+- 完整复验 31 文件、129/129 通过；独立审阅发现的旧安装器运行时准备问题已用失败回归修复。Node 24 初始化及 Chromium 随机定位差异在 CI 环境复现并修复，没有放宽像素一致性要求。
+- PR #2 已合入 dev，PR #3 已合入 main（08771f0）；dev/main 均要求 PR 和 checks / verify，production 仅允许 main。main Release 40074629034 已恢复成功，v0.2.0 npm 包与 GitHub Release 可公开使用。公开下载与 CI tarball 逐字节相同；公开 npm setup、正式 tag 的 skills CLI 全局安装和准确版本入口均已通过。
 
-未完成的验收不得视为通过：GitHub 实际工作流、npm OIDC 可信发布、公开 tag Skill 安装及新 Codex 会话制作。本轮不扩大动画能力，后续新动作/主题预计 v0.3.0。
+npm 可信来源已绑定 release.yml / production，并授权 publish 与 dist-tag，但来源必须在两天内成功自动发布一个新版本才能完成验证。正在准备 v0.2.1 文档修订版走正常流程；新 Codex 会话已自动发现正式 Skill 并完成 compose / preview / build，生成 15 秒 1080p30、450 帧 H.264/AAC；质量 passed、完整解码通过。未逐项验收连续节奏与听感。v0.2.1 本地 31 文件、129/129 测试通过（185.63 秒）；自动发布及最终清理仍在执行。尚未实际通过的验收不算完成。本轮不扩大动画能力，后续新动作/主题预计 v0.3.0。

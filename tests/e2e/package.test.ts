@@ -1,4 +1,7 @@
+import {readFileSync} from 'node:fs';
 import {expect,test} from 'vitest';
+const packageVersion=JSON.parse(readFileSync(new URL('../../package.json',import.meta.url),'utf8')).version;
+
 import {mkdtemp,mkdir,writeFile,readFile,rm,readdir,access,realpath} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join,resolve} from 'node:path';
@@ -29,7 +32,7 @@ test('published tarball works outside source with production dependencies and sy
    try{return JSON.parse((await exec(bin,[...args,'--json'],{cwd,timeout:120000,maxBuffer:4*1024*1024})).stdout);}
    catch(error){const e=error as Error&{stdout?:string;stderr?:string};e.message+='\n'+e.stdout+'\n'+e.stderr;throw e;}
   };
-  expect(await run(['version'])).toMatchObject({version:'0.2.0'});
+  expect(await run(['version'])).toMatchObject({version:packageVersion});
   // The standalone Skill resolves npm in isolation; relative paths still belong to the caller.
   const restored=JSON.parse((await exec(bin,['init','入口 目录','--json'],{cwd:root,env:{...process.env,TAKECRAFT_CALLER_CWD:cwd}})).stdout);
   expect(restored.status).toBe('succeeded');await access(join(cwd,'入口 目录/project.json'));

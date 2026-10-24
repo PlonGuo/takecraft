@@ -2,7 +2,7 @@
 
 把品牌、文案、功能点和风格交给 Agent，由本地工具生成完整的二维产品视频。Agent 负责内容与选择，Takecraft 负责动作计算、排版、逐帧渲染、声音、字幕和检查。
 
-当前封板版本为 **v0.1.1**：15 秒、1080p30，五类可复用动作，Motion 弹簧采样，纸间 / 夜航 / 构想三套主题。
+当前分发版本为 **v0.2.1**（动画能力保持 v0 封板范围）：15 秒、1080p30，五类可复用动作，Motion 弹簧采样，纸间 / 夜航 / 构想三套主题。
 
 ## Demo
 
@@ -32,7 +32,7 @@ Skill 入口会获取配套的准确 npm 版本，无须 clone 仓库。Node.js 
 
 更新时再次把上述请求交给 Codex，使用最新正式 tag 安装配套 Skill，再检查环境；制作视频时不自动升级。当前会话安装后直接读取新 Skill；如果后续未识别，新开 Codex 对话。已有 `~/.agents/skills/takecraft`、`~/.codex/skills/takecraft`（或 CODEX_HOME）及项目同名 Skill 时先处理来源冲突，不要盲目覆盖。
 
-v0.2.0 是这条分发路径的首版；发布完成前，最新可用版本仍是 [v0.1.1](https://github.com/PlonGuo/takecraft/releases/tag/v0.1.1)。旧安装器继续兼容该固定版本：
+v0.2.x 提供 npm 工具与独立 Skill。旧安装器仍可使用原封板版本 [v0.1.1](https://github.com/PlonGuo/takecraft/releases/tag/v0.1.1)：
 
 ```sh
 (set -o pipefail; curl -fsSL https://raw.githubusercontent.com/PlonGuo/takecraft/v0.1.1/install.sh | bash -s -- --version v0.1.1)
@@ -48,13 +48,13 @@ Skill 会查询需求格式，生成 brief，再调用 compose / preview / build
 
 ## 手动使用
 
-v0.2.0 发布后，无需安装 Skill 也可以调用 CLI；第一次先运行 `npx --yes takecraft@0.2.0 setup --json`。也可通过 `pnpm add -g takecraft@0.2.0` 安装命令。
+无需安装 Skill 也可以调用 CLI；第一次先运行 `npx --yes takecraft@0.2.1 setup --json`。也可通过 `pnpm add -g takecraft@0.2.1` 安装命令。
 
 ```sh
-npx --yes takecraft@0.2.0 doctor --json
-npx --yes takecraft@0.2.0 describe brief --json
-npx --yes takecraft@0.2.0 compose /absolute/brief.json /absolute/new-film --theme paper --json
-npx --yes takecraft@0.2.0 build /absolute/new-film/project.json --json
+npx --yes takecraft@0.2.1 doctor --json
+npx --yes takecraft@0.2.1 describe brief --json
+npx --yes takecraft@0.2.1 compose /absolute/brief.json /absolute/new-film --theme paper --json
+npx --yes takecraft@0.2.1 build /absolute/new-film/project.json --json
 ```
 
 参考 [brief 示例](examples/product-launch-v2/brief.json)与[试用指南](docs/try-it.md)。compose 只创建新目录。成功结果返回 MP4、预览、SRT 和质量报告的绝对路径；中间产物位于作品的 `.takecraft/` 中。
