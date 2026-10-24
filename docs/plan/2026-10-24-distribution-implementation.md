@@ -71,7 +71,7 @@
 - [x] 推送 feature，PR 合入 dev 并跑 CI；设置 dev 为默认分支和必要保护规则。保护 main 仅经 PR 发布。
 - [x] 用户完成 npm 身份/许可证后建立首包和 Trusted Publisher；首次身份初始化不能假装已经由未存在的 npm 包 OIDC 配置完成。
 - [x] dev → main 发布 PR，观察 Actions 完整结果；任何失败明确修复或记录阻塞，不绕过发布检查。
-- [ ] 从公开 npm/GitHub tag 安装，验证 Codex Skill 发现与制作；同步 main → dev，更新状态、清理本次临时产物及开发 worktree。
+- [x] 从公开 npm/GitHub tag 安装，验证 Codex Skill 发现与制作；最终同版升级/version/setup/doctor 通过，保留 main 历史同步回 dev，清理本次临时产物及开发 worktree。
 
 ## 版本规则
 
@@ -84,11 +84,11 @@
 - [x] 复现同步三十秒才可读时旧实现六秒误失败，并覆盖有界等待与完整性错误立即失败；改为最多三分钟的递增等待，回归 8/8 通过。
 - [x] PR 使用快速套件，保留全部单元/浏览器和一秒编码冒烟；取消 dev push 重复全套；main 默认完整模式，检查名保持 checks / verify。
 - [x] 完整套件、快速套件、actionlint 与 GitHub 实际时间验证；快速 PR 实测 2 分 13 秒。
-- [ ] v0.2.2 按 feature → dev → main 发布，公开安装同版 Skill，完成状态同步和清理。
+- [x] v0.2.2 按 feature → dev → main 发布；公开同版 Skill 升级发现下述缓存问题，最终安装/同步/清理由 v0.2.3 验收完成。
 
 ## 本机升级验收追加修复：v0.2.3
 
 v0.2.2 已发布且完整 CI 成功，实际更新本机 Skill 时发现 npm exec 强制 prefer-offline 会读取旧版本列表，误报新版本不存在。该场景不是冷安装或同版离线执行；追加升级回归后只移除这一强制选项，保留 npm 自身的缓存和准确版本解析。
 
 - [x] 真实 fixture registry 缓存旧列表后公开新版本，旧入口 ETARGET；修复后升级、同版离线、隔离调用和信号传播 4/4 通过。
-- [ ] 完整套件与正常 feature → dev → main 发布；最终公开同版 Skill 安装验收、状态同步及清理。
+- [x] 本地全套 132/132；正常 feature → dev → main 发布（Release 40081705302 成功），公开包字节核对及本机同版 Skill 升级/version/setup/doctor 通过；同步最终状态并清理。

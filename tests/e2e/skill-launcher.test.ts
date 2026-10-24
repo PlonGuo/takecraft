@@ -21,7 +21,7 @@ beforeAll(async()=>{
 import {writeFileSync} from 'node:fs';
 if(process.env.TAKECRAFT_CALLER_CWD)process.chdir(process.env.TAKECRAFT_CALLER_CWD);
 const args=process.argv.slice(2);
-if(args[0]==='wait'){console.log('READY');process.on('SIGTERM',()=>{writeFileSync(args[1],'stopped');process.exit(143)});setInterval(()=>{},1000);}
+if(args[0]==='wait'){setTimeout(()=>{process.on('SIGTERM',()=>{writeFileSync(args[1],'stopped');process.exit(143)});console.log('READY');},100);setInterval(()=>{},1000);}
 else{console.log(JSON.stringify({version:${JSON.stringify(version)},cwd:process.cwd(),args}));process.exitCode=args[0]==='fail'?2:0;}
 `);await chmod(join(pkg,'bin.mjs'),0o755);
  const archive=join(root,'fixture.tgz');await exec('tar',['-czf',archive,'package'],{cwd:root});
@@ -57,7 +57,9 @@ test('cached exact package works offline; missing cache reports failure',async()
 });
 test('termination reaches the actual tool and returns nonzero',async()=>{
  const marker=join(root,'stopped');const child=spawn(process.execPath,[launcher,'wait',marker],{cwd,env});
- const ended=new Promise<number|null>(r=>child.once('exit',r));
+ // Readiness is emitted only after the delayed fixture registers its handler.
+ // close also waits for inherited output streams, rather than only the wrapper's exit.
+ const ended=new Promise<number|null>(r=>child.once('close',r));
  try{await new Promise<void>((done,reject)=>{const timer=setTimeout(()=>reject(new Error('tool did not start')),15000);child.stdout.on('data',data=>{if(String(data).includes('READY')){clearTimeout(timer);done();}});child.once('error',reject);});
  child.kill('SIGTERM');expect(await ended).not.toBe(0);expect(await readFile(marker,'utf8')).toBe('stopped');
  }finally{child.kill('SIGKILL');}
