@@ -52,7 +52,7 @@
 - 源码：`/Users/plonguo/Git/takecraft`。
 - 封板后只保留 `/Users/plonguo/Takecraft Videos/Demos/paper.mp4` 与 `editorial.mp4` 两条 README demo；对应 GitHub 视频附件与 Release 资产可下载。
 - 旧轻舟/拾光样片、三主题临时预览、真实需求试用输出、逐帧 PNG、JSON/JSONL 运行报告、缓存与 scratch 均按用户要求清理。下文早期检查结果是历史记录，不意味着这些临时文件仍在本机。
-- 本机开发用全局 Skill 链接指向仓库的 `skills/takecraft`。分发安装使用独立的版本目录，代码与 Skill 随 current 同步切换。
+- 本机正式 Skill 安装在 `~/.agents/skills/takecraft`，通过 npm 调用同版引擎；原开发链接保存在 `~/.codex/skill-backups/takecraft-development-before-0.2.0`。源码开发与正式使用相互独立。
 
 ## 动作工具与主题交付记录
 
@@ -92,21 +92,32 @@ v0 发布前完整验证：27 文件 112 项通过（124.36 秒）。本机旧�
 
 v0 已发布：[Takecraft v0 · v0.1.1](https://github.com/PlonGuo/takecraft/releases/tag/v0.1.1)，PR #1 已合入 main，本机 main 与远端同步。公开匿名安装、升级、同版更新、doctor 与跨目录 compose 均实际验证通过，README 两条视频与 Release 下载均已就绪。macOS 安装入口修复后完整复查 27 文件、113 项通过（123.42 秒）；之前一轮浏览器关闭超时已记录于发布计划，独立复查及整套重跑均通过。Linux 未实机验证。验证后又清理 225,885,868 字节产物及临时安装副本；本机仍只留两个 demo 和必需运行依赖。
 
-## 当前实施：v0.2.0 Agent 优先分发
+## 分发交付：v0.2.x
 
-用户已授权实施：[分发设计](2026-10-24-agent-first-distribution.md)、[实施计划](2026-10-24-distribution-implementation.md)。采用 MIT；npm 用户 plonguo 已注册并完成本机登录。GitHub 已公开，默认分支为 dev。
+[分发设计](2026-10-24-agent-first-distribution.md)与[实施计划](2026-10-24-distribution-implementation.md)。仓库公开、MIT，npm 拥有者 plonguo；GitHub 默认分支 dev，功能分支 → dev → main。dev/main 均要求 PR 和 `checks / verify`，production 仅允许 main。
 
-- 可发布的完整 npm 包、setup/version 已实现。首次完整验证 119/119 通过；从源目录外安装，无 tsx/开发依赖，实际完成 450 帧视频及完整解码。
-- 独立 Skill 的固定版本入口已实现。真实 npm 子进程验证同名项目/全局命令隔离、中文空格/字面参数、离线缓存及缺缓存失败、中断传播；3/3 通过。Skill validator 通过。
-- 发布策略与 Actions 已实现：同一 tarball、pending→下载校验和出片→latest→tag/Release；内容/提交冲突拒绝，旧任务不回退 latest。6/6 策略与恢复测试通过，actionlint 通过。
-- npm/pnpm 实际安装均已出片；发布脚本 dry-run 通过，下载后使用的 smoke 脚本本地完成 450 帧出片。
-- 完整复验 31 文件、129/129 通过；独立审阅发现的旧安装器运行时准备问题已用失败回归修复。Node 24 初始化及 Chromium 随机定位差异在 CI 环境复现并修复，没有放宽像素一致性要求。
-- PR #2 已合入 dev，PR #3 已合入 main（08771f0）；dev/main 均要求 PR 和 checks / verify，production 仅允许 main。main Release 40074629034 已恢复成功，v0.2.0 npm 包与 GitHub Release 可公开使用。公开下载与 CI tarball 逐字节相同；公开 npm setup、正式 tag 的 skills CLI 全局安装和准确版本入口均已通过。
+- npm 包包含编译工具、配方与资源，无需源码/tsx/开发依赖；`setup` 准备浏览器，缺 FFmpeg 明确失败。npm/pnpm 从真实 tarball 安装均能完成 450 帧视频与完整解码。
+- 独立 Skill 固定同版引擎。真实 npm 子进程覆盖同名工具隔离、中文空格与字面参数、退出码、离线/缺缓存、中断，以及旧缓存升级；最新 4/4 通过。
+- 发布验证同一 tarball，经 pending → 下载与出片 → latest → 正式 tag/Release；已有内容/提交冲突拒绝，旧任务不回退 latest。发布等待 npm 同步最多三分钟，完整性错误立即失败；策略测试 8/8 通过。
+- Node 24 初始化复制冲突和 Chromium 乱序定位差异均已复现修复，没有放宽像素一致性要求。独立审阅发现的旧安装器运行时准备问题已有失败回归；全套最新 31 文件、132/132 通过（Node 24，本地 180.20 秒），类型检查、Skill validator、actionlint 通过。
+- v0.2.0 完成首次公开发布、公开 tarball 与 CI 逐字节核验、正式 tag Skill 全局安装。新原生 Codex 会话发现公开 v0.2.0 Skill，独立完成 compose / preview / build；成片 15 秒、1080p30、450 帧、H.264/AAC，质量 passed、完整解码通过。未逐项确认连续节奏与听感；原生会话使用已准备的 npm 缓存，冷安装另行验证。
+- v0.2.1 首次 GitHub OIDC 发布附带来源证明；六秒读回窗口不足，原工作流恢复成功。v0.2.2 修复同步等待并分层 CI，Release 40079579619 完整成功；公开包与 CI SHA256 `07969ad3fda8446bde9aca44a5a0f686e847ef560d12db26ba79f7612be9e329` 一致。
 
-npm 可信来源已绑定 release.yml / production，并授权 publish 与 dist-tag。v0.2.1 由 GitHub OIDC 实际上传，附带来源证明；首次读回因 npm 同步超过六秒而失败，随后同一工作流恢复成功，latest/tag/Release 已补齐；新 Codex 会话已自动发现正式 Skill 并完成 compose / preview / build，生成 15 秒 1080p30、450 帧 H.264/AAC；质量 passed、完整解码通过。未逐项验收连续节奏与听感。v0.2.1 本地 31 文件、129/129 测试通过（185.63 秒）。用户随后要求缩短 feature → dev 等待；正在以 v0.2.2 修复同步等待和 CI 分层，最终安装、同步与清理仍在执行。尚未实际通过的验收不算完成。本轮不扩大动画能力，后续新动作/主题预计 v0.3.0。
+v0.2.2 本机实际升级又发现强制 prefer-offline 读取旧 npm 版本列表，误报新包不存在。升级回归先 ETARGET、修复后通过；v0.2.3 只取消该强制选项，使用 npm 正常缓存校验，不改动画引擎。
 
-### CI 耗时与后续优化
+[v0.2.3 正式 Release](https://github.com/PlonGuo/takecraft/releases/tag/v0.2.3) 已由 [main Actions 40081705302](https://github.com/PlonGuo/takecraft/actions/runs/40081705302) 自动发布成功（12 分 11 秒），来源提交 `ffce0acb84b17f0454197ac711c8d0159bdee1e7`。公开包与 CI tarball 逐字节相同，SHA256 `e0d9bbfb0c2d9fb5428bb255b9d19e06f624243a953f2ff197f94ba67f0493d0`，附有来源证明。
 
-用户反馈当前 CI 过慢。实测 v0.2.1 PR #4 的验证耗时 548.66 秒；安装包出片 149.88 秒、产品片 147.18 秒、Motion 产品片 84.41 秒。`fileParallelism: false` 使文件串行运行，同一完整套件又分别在 feature PR、dev push、发布 PR 和 main Release 执行。依赖准备不是主要瓶颈。
+本机通过 skills@1.7.4 从正式 tag 更新到 `~/.agents/skills/takecraft`；`version / setup / doctor` 均返回 0.2.3 / succeeded，实际 Node 22.22.0、FFmpeg/ffprobe 和浏览器均 passed。
 
-按用户要求，v0.2.2 将所有 PR 改为快速检查，取消受保护 dev 的重复 push 测试；main Release 仍跑完整套件与真实 npm/pnpm 安装出片。快检保留全部单元/浏览器测试及一秒真实 1080p 编码，本地 26 文件、125/125 通过（33.10 秒）；GitHub 时间待实测。后续若仍慢再考虑独立测试分组并行，目前保持串行避免抢资源。main 正式发布约十二分钟可以接受；普通 feature PR 目标 1–3 分钟，尚不是性能承诺。
+不重复同一原生 Codex 整片验收：已验证公开 Skill 发现与制作，当前完整 CI 验证同版引擎出片，最终单独验证真实 Skill 升级/version/setup/doctor。
+
+### CI 实际耗时
+
+v0.2.1 PR #4 完整验证耗时 548.66 秒，主要耗时是重复长片和安装包出片。v0.2.2 起所有 PR 使用快检，取消 dev push 重复测试；main Release 仍验证全部测试和真实 npm/pnpm 安装出片。快检包含全部单元/浏览器测试及一秒真实 1080p 编码。
+
+- PR #6 快检实际 2 分 13 秒；PR #8 快检实际 1 分 42 秒。
+- v0.2.2 main 正式发布约 11 分 49 秒；正式发布耗时与 feature → dev 分开。
+- 已保留 `checks / verify` 检查名和分支保护。长场景回归可能到 main 的完整检查才被发现；发布验证通过前不推进 latest。
+- pnpm/action-setup 的 Node 20 元数据提示不等于测试使用 Node 20，实际 runner 为 Node 24；之前读回失败的原因是 npm 同步窗口，不是该提示。
+
+本轮不增加动画能力；下一轮依据真实参考视频迭代动作/风格，预计 v0.3.0。1.0.0 留给公开契约稳定承诺。作品只保留 README 中既有两条 Demo，哈希未变。开发 worktree、临时视频/截图/报告、公开验收安装包和本轮旧版执行缓存均已清理；保留当前引擎/浏览器必需的运行缓存、开发依赖及原 Skill 小型备份。最终文档提交将 main 历史保留同步回 dev，继续以 dev 为工作分支。

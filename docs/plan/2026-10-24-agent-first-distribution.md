@@ -1,6 +1,6 @@
 # Takecraft：以 Coding Agent 为主要入口的安装与分发方案
 
-日期：2026-10-24。状态：用户已批准开始实施，首版 Codex/macOS，dev/main 自动分发。先完成这一轮分发并验收，再开始 v1 动画能力开发。
+日期：2026-10-24。状态：Codex/macOS 首版分发已完成至 v0.2.3，dev/main 自动发布已验证。下一轮动作/风格迭代采用 v0.3.0。
 
 ## 目标与已确定要求
 
@@ -117,13 +117,13 @@ PR 是 Pull Request，即可审阅的合并请求。实施时从当前已交付 
 | 位置/事件 | 自动执行 | 是否正式发布 |
 | --- | --- | --- |
 | feature/* → dev 的 PR | 类型检查、测试、构建、安装包冒烟检查 | 否 |
-| dev 有新提交 | 同一套 CI，验证合并后的实际状态 | 否 |
-| dev → main 的发布 PR | 完整 CI、发行版本及 Skill 版本一致性检查 | 否 |
+| dev 合入受保护 PR | PR 快速 CI 已通过，不重复触发 push 测试 | 否 |
+| dev → main 的发布 PR | 快速 CI、发行版本及 Skill 版本一致性检查 | 否 |
 | main 合入后的 push | 针对实际 main 提交重新验证、打包、发布及下载检查 | 是，新版本通过检查时 |
 
 ### 最小工作流
 
-- `.github/workflows/ci.yml`：PR 目标为 dev/main，以及 push 到 dev；复用同一验证步骤。PR 检查没有发布权限。
+- `.github/workflows/ci.yml`：PR 目标为 dev/main，运行快速检查；main Release 复用完整检查。v0.2.2 起取消 dev push 的重复全套。PR 检查没有发布权限。
 - `.github/workflows/release.yml`：自动触发条件为 push 到 main；测试通过后才进入发布。手动重新运行只用于失败恢复，不改变正常的 main 触发入口。
 - 本轮不添加 dev 的 npm 预览发布、Changesets 或根据提交描述推断版本等系统。Changesets 是管理待发布变更与版本号的工具；单包项目先采用发布前明确修改 package.json、变更记录和 Skill 版本清单即可。
 - 保护 dev/main：通过 PR 合并并要求必要检查通过；main 正常只接收 dev 的发布合并，不能因 GitHub 默认分支改为 dev 而漏掉 main 的检查。单人项目不额外要求无法由本人完成的他人审批。
@@ -148,7 +148,7 @@ npm 与 GitHub 的发布不能跨服务保证原子性。若 npm 已成功但 Gi
 
 发布身份需允许直接 `npm publish` 及更新分发标签；不要误配为必须人工批准的 stage-only 模式。仅发布 job 取得 `id-token: write`，创建 tag/Release 的步骤取得必要 GitHub 写权限。使用 GitHub 托管 runner 和符合 npm 可信发布要求的 Node/npm 版本；工程安装、测试和打包仍用 pnpm。
 
-首次建立 npm 包及可信发布关联可能需要包拥有者完成一次设置；在实施时核实账号/包名、初始化路径后完成，不让用户在聊天里粘贴 token。现有仓库还没有 `.github/workflows`，dev 也尚未创建，本节均为计划。
+首次建立 npm 包及可信发布关联可能需要包拥有者完成一次设置；在实施时核实账号/包名、初始化路径后完成，不让用户在聊天里粘贴 token。规划时尚无 `.github/workflows` 或 dev；现均已实现，正式验证与 CI 分层结果见 [计划与进度](README.md)。
 
 依据：[GitHub 工作流触发规则](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax)、[npm 可信发布](https://docs.npmjs.com/trusted-publishers/)。
 
@@ -156,7 +156,7 @@ npm 与 GitHub 的发布不能跨服务保证原子性。若 npm 已成功但 Gi
 
 不增加动画功能，不做 v1，不建设自己的 Skill 商店、账号系统、MCP 服务或常驻更新进程。MCP 是 Agent 与外部工具通信的协议；现有本地 CLI 已可被 Agent 调用，本次没有增加它的必要。
 
-更新提醒按用户要求后置。当前只需准备版本查询、明确的主动更新说明，以及 Skill/引擎配套校验。skills 已有 `check` 和按名称 `update`；后续提醒可以复用这些能力，但不扫描并更新用户所有 Skill、不在渲染中升级。版本建议：本次作为 v0.2.0 分发增强，验收后再开 v1 动画开发；准确版本号发布时决定。
+更新提醒按用户要求后置。当前只需准备版本查询、明确的主动更新说明，以及 Skill/引擎配套校验。skills 已有 `check` 和按名称 `update`；后续提醒可以复用这些能力，但不扫描并更新用户所有 Skill、不在渲染中升级。版本建议：本次作为 v0.2.0 分发增强，验收后下一轮动作/风格迭代用 v0.3.0；准确版本号发布时决定。
 
 ## 建议实施顺序与验收
 
@@ -164,7 +164,7 @@ npm 与 GitHub 的发布不能跨服务保证原子性。若 npm 已成功但 Gi
 2. **先完成 npm 工具闭环。** 实现 setup/版本输出，从打出的压缩包装入隔离环境，验证 doctor、compose、preview、build；不借用源码目录或开发依赖。生产依赖安装与 npm/pnpm 的依赖脚本策略分别测试。
 3. **再完成可独立安装的 Skill。** 增加固定版本清单与轻量入口，改写安装、制片和失败处理说明。复用 skills CLI 安装；做实际 Skill 发现、全局/项目作用域、复制/链接模式和重复安装测试。
 4. **验证最小完整体验。** 只验证 Codex + macOS 的“粘贴安装请求 → 新会话识别 → 制作短片”，以及手动 CLI；不能仅以安装路径存在判定兼容。其他 Agent/操作系统不作为本轮阻塞项，明确未验证。
-5. **接通自动发布并发版。** 配置 dev/main 和必要检查，通过一次 dev → main 验证 Actions 完整链路。README 将 Agent 安装请求放在首位、CLI 用法其次；保留两个视频。公开 npm 和固定 tag Skill 入口验证通过后，再进入 v1。
+5. **接通自动发布并发版。** 配置 dev/main 和必要检查，通过一次 dev → main 验证 Actions 完整链路。README 将 Agent 安装请求放在首位、CLI 用法其次；保留两个视频。公开 npm 和固定 tag Skill 入口验证通过后，再进入下一轮动画迭代（v0.3.0）。
 
 最小验收矩阵：macOS 本机与隔离安装目录（自动测试使用 GitHub 托管 macOS runner，不做多系统矩阵）；无全局 Takecraft、有旧版 Takecraft；无开发依赖；中文/空格路径；已有 Skill 冲突；缺浏览器/FFmpeg；网络中断与重复安装；准确版本与缓存丢失；源码包之外完成 15 秒成片及完整解码。短片和日志仅作临时验证，结束后清理，保留既有两个 README demo。
 
@@ -174,6 +174,6 @@ npm 与 GitHub 的发布不能跨服务保证原子性。若 npm 已成功但 Gi
 
 npm 发布账号/包名、许可证，以及可实际验收的 Agent/操作系统环境。这些不妨碍当前方向规划，但不能在正式发布前猜测。实施计划见 2026-10-24-distribution-implementation.md；发布身份和许可证确认前不执行对应发布。
 
-初版独立只读审阅未发现重大缺口。本轮缩小到 Codex/macOS，并追加 dev/main 自动发布；复核发现的旧任务重跑导致 latest 回退、skills.sh 目录入口可能跟随 dev 两点，已分别加入单调推进约束和首版入口边界。准确版本执行、缓存和发布工作流仍属于实施验收内容，尚未实测。
+初版独立只读审阅未发现重大缺口。本轮缩小到 Codex/macOS，并追加 dev/main 自动发布；复核发现的旧任务重跑导致 latest 回退、skills.sh 目录入口可能跟随 dev 两点，已分别加入单调推进约束和首版入口边界。规划时准确版本执行、缓存和发布工作流尚未实测；现已完成公开安装和发布链路验证，实际结果与限制见 [计划与进度](README.md)。
 
 自检：只装好 Skill 是否能渲染视频？Skill 被复制到任意目录后还能找到准确版本工具吗？npm 缓存被清理时会明确处理还是误报成功？用户只需描述目标，还是仍被要求手动拼安装步骤？
