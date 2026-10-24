@@ -99,7 +99,7 @@ v0 已发布：[Takecraft v0 · v0.1.1](https://github.com/PlonGuo/takecraft/rel
 - npm 包包含编译工具、配方与资源，无需源码/tsx/开发依赖；`setup` 准备浏览器，缺 FFmpeg 明确失败。npm/pnpm 从真实 tarball 安装均能完成 450 帧视频与完整解码。
 - 独立 Skill 固定同版引擎。真实 npm 子进程覆盖同名工具隔离、中文空格与字面参数、退出码、离线/缺缓存、中断，以及旧缓存升级；最新 4/4 通过。
 - 发布验证同一 tarball，经 pending → 下载与出片 → latest → 正式 tag/Release；已有内容/提交冲突拒绝，旧任务不回退 latest。发布等待 npm 同步最多三分钟，完整性错误立即失败；策略测试 8/8 通过。
-- Node 24 初始化复制冲突和 Chromium 乱序定位差异均已复现修复，没有放宽像素一致性要求。独立审阅发现的旧安装器运行时准备问题已有失败回归；全套最新 31 文件、132/132 通过（Node 24，本地 180.20 秒），类型检查、Skill validator、actionlint 通过。
+- Node 24 初始化复制冲突和 Chromium 乱序定位差异均已复现修复，没有放宽像素一致性要求。独立审阅发现的旧安装器运行时准备问题已有失败回归；发行前全套 31 文件、132/132 通过（Node 24，本地 180.20 秒），类型检查、Skill validator、actionlint 通过。
 - v0.2.0 完成首次公开发布、公开 tarball 与 CI 逐字节核验、正式 tag Skill 全局安装。新原生 Codex 会话发现公开 v0.2.0 Skill，独立完成 compose / preview / build；成片 15 秒、1080p30、450 帧、H.264/AAC，质量 passed、完整解码通过。未逐项确认连续节奏与听感；原生会话使用已准备的 npm 缓存，冷安装另行验证。
 - v0.2.1 首次 GitHub OIDC 发布附带来源证明；六秒读回窗口不足，原工作流恢复成功。v0.2.2 修复同步等待并分层 CI，Release 40079579619 完整成功；公开包与 CI SHA256 `07969ad3fda8446bde9aca44a5a0f686e847ef560d12db26ba79f7612be9e329` 一致。
 
@@ -110,6 +110,8 @@ v0.2.2 本机实际升级又发现强制 prefer-offline 读取旧 npm 版本列�
 本机通过 skills@1.7.4 从正式 tag 更新到 `~/.agents/skills/takecraft`；`version / setup / doctor` 均返回 0.2.3 / succeeded，实际 Node 22.22.0、FFmpeg/ffprobe 和浏览器均 passed。
 
 不重复同一原生 Codex 整片验收：已验证公开 Skill 发现与制作，当前完整 CI 验证同版引擎出片，最终单独验证真实 Skill 升级/version/setup/doctor。
+
+最终文档同步 PR 的首次快检出现 1/126 失败：测试夹具先发 READY 再注册信号处理，造成竞态。放大注册窗口后稳定复现相同 ENOENT；改为注册完成后发 READY，并等待进程及输出流关闭，定向 4/4 通过。保留真实中断标记断言；仅修测试，不修改已发布引擎或额外发版。
 
 ### CI 实际耗时
 
