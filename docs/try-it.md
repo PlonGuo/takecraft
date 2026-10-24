@@ -22,9 +22,9 @@
 保存 [需求示例](../examples/product-launch-v2/brief.json) 为自己的 brief.json 并修改品牌文案，然后运行：
 
 ```sh
-npx --yes takecraft@0.2.1 setup --json
-npx --yes takecraft@0.2.1 compose ./brief.json ./my-first-film --theme midnight --json
-npx --yes takecraft@0.2.1 build ./my-first-film/project.json --json
+npx --yes takecraft@0.2.2 setup --json
+npx --yes takecraft@0.2.2 compose ./brief.json ./my-first-film --theme midnight --json
+npx --yes takecraft@0.2.2 build ./my-first-film/project.json --json
 ```
 
 开发 checkout 可将命令前缀换为 `node /absolute/takecraft/scripts/run.mjs`，使用源码版本；独立 Skill 则按其 runtime.json 调用正式 npm 版本。

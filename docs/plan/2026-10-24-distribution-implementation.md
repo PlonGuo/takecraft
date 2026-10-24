@@ -69,10 +69,19 @@
 - [x] 完整运行 typecheck/build/test、Skill 校验、实际 npm/pnpm 安装包检查，记录已覆盖和未覆盖条件。
 - [x] 一次独立全分支审阅；重要问题用失败回归验证后修复，完成要求的复测。
 - [x] 推送 feature，PR 合入 dev 并跑 CI；设置 dev 为默认分支和必要保护规则。保护 main 仅经 PR 发布。
-- [ ] 用户完成 npm 身份/许可证后建立首包和 Trusted Publisher；首次身份初始化不能假装已经由未存在的 npm 包 OIDC 配置完成。
-- [ ] dev → main 发布 PR，观察 Actions 完整结果；任何失败明确修复或记录阻塞，不绕过发布检查。
+- [x] 用户完成 npm 身份/许可证后建立首包和 Trusted Publisher；首次身份初始化不能假装已经由未存在的 npm 包 OIDC 配置完成。
+- [x] dev → main 发布 PR，观察 Actions 完整结果；任何失败明确修复或记录阻塞，不绕过发布检查。
 - [ ] 从公开 npm/GitHub tag 安装，验证 Codex Skill 发现与制作；同步 main → dev，更新状态、清理本次临时产物及开发 worktree。
 
 ## 版本规则
 
 本轮 v0.2.0；修复用 v0.2.x，新动作/主题下一轮用 v0.3.0。1.0.0 表示公开命令、输入格式及 Skill 调用契约进入稳定承诺，不表示第几轮开发。参见 https://semver.org/。
+
+## 集成验收追加修复：v0.2.2
+
+用户反馈正式发布约十二分钟可以接受，但 feature → dev 不应等待这么久。v0.2.1 已成功 OIDC 上传并恢复完整 Release；同时暴露 npm 上传后读回的六秒等待过短。
+
+- [x] 复现同步三十秒才可读时旧实现六秒误失败，并覆盖有界等待与完整性错误立即失败；改为最多三分钟的递增等待，回归 8/8 通过。
+- [x] PR 使用快速套件，保留全部单元/浏览器和一秒编码冒烟；取消 dev push 重复全套；main 默认完整模式，检查名保持 checks / verify。
+- [ ] 完整套件、快速套件、actionlint 与 GitHub 实际时间验证。
+- [ ] v0.2.2 按 feature → dev → main 发布，公开安装同版 Skill，完成状态同步和清理。

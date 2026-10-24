@@ -3,7 +3,20 @@ import {expect,test} from 'vitest';
 // @ts-expect-error JavaScript release module
 import {compareVersions,releaseDecision,assertSamePackage,shouldAdvance} from '../../scripts/release-policy.mjs';
 // @ts-expect-error JavaScript release module
-import {publishRelease} from '../../scripts/release.mjs';
+import {publishRelease,waitForPublished} from '../../scripts/release.mjs';
+test('registry propagation can take longer than the original six-second window',async()=>{
+ let clock=0,calls=0;const published={version:'0.2.1'};
+ const result=await waitForPublished(async()=>{calls++;return clock>=30000?published:null;},{now:()=>clock,sleep:async(ms:number)=>{clock+=ms;}});
+ expect(result).toBe(published);expect(clock).toBeGreaterThanOrEqual(30000);expect(calls).toBeGreaterThan(3);
+});
+test('registry propagation wait is bounded and does not hide a corrupt package',async()=>{
+ let clock=0;const sleep=async(ms:number)=>{clock+=ms;};
+ await expect(waitForPublished(async()=>null,{now:()=>clock,sleep,timeoutMs:20000})).rejects.toThrow(/not readable/);
+ expect(clock).toBe(20000);
+ const before=clock;
+ await expect(waitForPublished(async()=>{throw Error('Registry integrity differs');},{now:()=>clock,sleep})).rejects.toThrow('Registry integrity differs');
+ expect(clock).toBe(before);
+});
 test('version policy handles numeric ordering and prevents unversioned runtime changes',()=>{
  expect(compareVersions('1.10.0','1.9.9')).toBe(1);
  expect(releaseDecision('0.1.1','0.2.0',['src/cli/index.ts'])).toBe('publish');
