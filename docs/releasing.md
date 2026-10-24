@@ -43,6 +43,8 @@ npm 新包尚不存在时，不能先假装已经配置该包的 Trusted Publish
 
 GitHub production 环境仅允许 main 部署。当前 dist-tag 的 OIDC 权限独立于 publish，本工作流固定 npm 12.2.1、Node 24；不要只开放 stage publish。绑定后重新运行同一 main 提交失败的 Release job，流程校验已存在内容并补齐 latest/tag/Release。
 
+新可信来源必须在两天内通过它成功发布一个版本，才会完成验证并绑定仓库身份；否则配置过期。首次手动发布后，恢复旧任务只会核对已有包，不能替代这次自动发布。应准备一个有实际文档或修复内容的修订版，通过正常 dev → main 流程发布，再在 npm 设置确认来源状态已验证。
+
 ## 失败与恢复
 
 - 上传前失败：修复或重跑原 Actions run；npm 未变化。
