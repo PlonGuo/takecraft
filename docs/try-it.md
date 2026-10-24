@@ -4,7 +4,7 @@
 
 ## 在新 Codex 对话中试用
 
-打开本地仓库 `/Users/plonguo/Git/takecraft`，粘贴下面的提示词，把品牌和功能换成你的真实需求。当前 Skill 尚未更新到新配方，先直接指定工具入口。
+打开本地仓库 `/Users/plonguo/Git/takecraft`，粘贴下面的提示词，把品牌和功能换成你的真实需求。v0 Skill 已使用新配方；已安装用户可直接调用 takecraft Skill。下方绝对路径示例用于本机开发 checkout，安装版入口见 README。
 
 ```text
 请用现有 Takecraft 工具为「星笺」做一条 15 秒产品介绍视频。

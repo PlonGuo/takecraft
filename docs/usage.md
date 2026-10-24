@@ -31,7 +31,7 @@ pnpm --silent takecraft build "我的影片/project.json" --json
 
 输出 `brief.json` 保存需求，`project.json` 保存生成结果；之后可以编辑 project 精调，修改 brief 后应 compose 到新目录。两者不会自动双向同步。compose 返回的 statistics 是规范化配置字节数及动作/轨道数量，不能当作 Agent token 节省率。
 
-从其他目录用 `node /absolute/path/takecraft/scripts/run.mjs ...` 调用即可；无需切回仓库。脚本定位工具和依赖，同时保留调用者的相对路径。全局 Skill 只需以后引用这个入口，不必把渲染器复制进 Codex 目录。
+从其他目录用 `node /absolute/path/takecraft/scripts/run.mjs ...` 调用即可；无需切回仓库。脚本定位工具和依赖，同时保留调用者的相对路径。v0 Skill 已引用这个入口，安装器用链接把 Skill 与同版本工具绑定，不必把渲染器复制进 Codex 目录。
 
 命令在工具仓库运行，作品可以保存在其他本地目录。含空格或中文的路径加引号。初始化只接受新目录；现有目录绝不覆盖。
 

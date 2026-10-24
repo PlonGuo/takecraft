@@ -47,14 +47,12 @@
 - 每次 build 自动校验并复用完整阶段；未完成的帧序列重新渲染。`--resume` 表达恢复意图，不承诺接着写半截帧。
 - 自动配音、逐词对齐、4K60、运动模糊、三维、云渲染与在线编辑器继续延后。实际 Agent token 节省比例未测量。
 
-## 本机产物与目录交接
+## v0 本机目录
 
-- 稳定仓库目录：`/Users/plonguo/Git/takecraft`。清理旧 worktree 后从这里继续；先用 `git status` 与 `git worktree list` 确认当前分支。
-- [轻舟原版](../../artifacts/deliverables/qingzhou.mp4)与[拾光改版](../../artifacts/deliverables/shiguang.mp4)：各 15 秒、450 帧、1920×1080、30 fps，含基础音效；字幕与质量报告在同目录。
-- 产物与运行报告被 Git 忽略，视频链接仅在本机可用；提交源码不会把视频上传 GitHub。
-- 清理时迁移整个 `artifacts/` 目录，保留原报告与哈希；旧报告中的绝对路径保留为历史证据，`artifacts/worktree-migration.json` 记录路径映射。交付清单使用新路径。
-- 全局 `~/.codex/skills/takecraft` 应指向稳定仓库下的 `skills/takecraft`，不再依赖旧 worktree。
-- 原恢复会话 `01a16434-661d-79b0-9188-af0ff9fcd879`（分析 OneTake 视频生成原理）已取消归档；旧 scratch 进度随本机产物备份保留。
+- 源码：`/Users/plonguo/Git/takecraft`。
+- 封板后只保留 `/Users/plonguo/Takecraft Videos/Demos/paper.mp4` 与 `editorial.mp4` 两条 README demo；对应 GitHub 视频附件与 Release 资产可下载。
+- 旧轻舟/拾光样片、三主题临时预览、真实需求试用输出、逐帧 PNG、JSON/JSONL 运行报告、缓存与 scratch 均按用户要求清理。下文早期检查结果是历史记录，不意味着这些临时文件仍在本机。
+- 本机开发用全局 Skill 链接指向仓库的 `skills/takecraft`。分发安装使用独立的版本目录，代码与 Skill 随 current 同步切换。
 
 ## 当前阶段：动作工具与主题
 
@@ -71,7 +69,7 @@
 
 输出目录采用 `/Users/plonguo/Takecraft Videos`；每批作品新建独立目录并提供本地播放入口。当前只承诺 15 秒产品片配方和已实现动作，不承诺任意题材、实时听感或主观完美。实际 Agent token 节省仍未测量。
 
-### 本轮交付证据
+### 封板前验收记录（临时文件已清理）
 
 - 本地播放入口：`/Users/plonguo/Takecraft Videos/2026-10-24 Motion Themes-gXVqZk/index.html`。同目录 paper.mp4、midnight.mp4、editorial.mp4 可直接播放；各主题子目录保留需求与完整项目。
 - `delivery.json` 保存哈希和生产结果；`playback-check.json` 记录三视频元数据、实际播放推进与无页面异常。查看了三主题关键画面和窗口展开/收拢的连续采样帧，未独立试听。
@@ -83,3 +81,11 @@
 ### GitHub 保存与用户试用
 
 用户另行授权提交、推送当前功能分支。保存前再次运行 typecheck/build 与完整测试：26 文件、106 项全部通过（123.31 秒），独立只读审阅未发现阻塞。源码、示例与试用文档已随提交 `09860ca` 推送至 GitHub 的 `feat/motion-themes` 分支；本机视频和渲染缓存继续留在作品目录。下一步使用真实品牌需求，通过公开工具入口制作一条新片，收集带时间点的视觉反馈。
+
+## v0 封板
+
+用户已完成真实品牌需求试用，反馈基础能力没有问题，并要求以 v0 封板。正式 tag 采用 v0.1.0，代码与 Skill 同版分发。用户另行明确授权公开仓库，敏感文件/历史高置信凭据模式检查后已设为 public。
+
+[发布与安装计划](2026-10-24-v0-release.md)。新增安装器不扩展动画功能：隔离准备版本、验证依赖与 doctor、原子切换 current、保护独立 Skill、保留一个回退版本。安装生命周期测试与 macOS 隔离实际安装已通过；Linux 尚未实机验证。独立审阅提出的 doctor stdout 丢失已修复，保留具体失败原因。
+
+v0 发布前完整验证：27 文件 112 项通过（124.36 秒）。本机旧产物与缓存已清理约 1.18 GB，Demos 中仅保留纸间、构想两个 MP4；必要源码、测试素材、依赖仍保留。
