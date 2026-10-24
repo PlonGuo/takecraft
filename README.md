@@ -2,7 +2,7 @@
 
 把品牌、文案、功能点和风格交给 Agent，由本地工具生成完整的二维产品视频。Agent 负责内容与选择，Takecraft 负责动作计算、排版、逐帧渲染、声音、字幕和检查。
 
-当前分发版本为 **v0.2.2**（动画能力保持 v0 封板范围）：15 秒、1080p30，五类可复用动作，Motion 弹簧采样，纸间 / 夜航 / 构想三套主题。
+当前分发版本为 **v0.2.3**（动画能力保持 v0 封板范围）：15 秒、1080p30，五类可复用动作，Motion 弹簧采样，纸间 / 夜航 / 构想三套主题。
 
 ## Demo
 
@@ -48,13 +48,13 @@ Skill 会查询需求格式，生成 brief，再调用 compose / preview / build
 
 ## 手动使用
 
-无需安装 Skill 也可以调用 CLI；第一次先运行 `npx --yes takecraft@0.2.2 setup --json`。也可通过 `pnpm add -g takecraft@0.2.2` 安装命令。
+无需安装 Skill 也可以调用 CLI；第一次先运行 `npx --yes takecraft@0.2.3 setup --json`。也可通过 `pnpm add -g takecraft@0.2.3` 安装命令。
 
 ```sh
-npx --yes takecraft@0.2.2 doctor --json
-npx --yes takecraft@0.2.2 describe brief --json
-npx --yes takecraft@0.2.2 compose /absolute/brief.json /absolute/new-film --theme paper --json
-npx --yes takecraft@0.2.2 build /absolute/new-film/project.json --json
+npx --yes takecraft@0.2.3 doctor --json
+npx --yes takecraft@0.2.3 describe brief --json
+npx --yes takecraft@0.2.3 compose /absolute/brief.json /absolute/new-film --theme paper --json
+npx --yes takecraft@0.2.3 build /absolute/new-film/project.json --json
 ```
 
 参考 [brief 示例](examples/product-launch-v2/brief.json)与[试用指南](docs/try-it.md)。compose 只创建新目录。成功结果返回 MP4、预览、SRT 和质量报告的绝对路径；中间产物位于作品的 `.takecraft/` 中。
