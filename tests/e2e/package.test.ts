@@ -13,6 +13,7 @@ test('published tarball works outside source with production dependencies and sy
   await exec('pnpm',['build'],{cwd:process.cwd()});
   await exec('pnpm',['pack','--pack-destination',root],{cwd:process.cwd()});
   const archive=join(root,(await readdir(root)).find(f=>f.endsWith('.tgz'))!);
+  await exec(process.execPath,['scripts/check-package.mjs',archive]);
   const files=(await exec('tar',['-tzf',archive])).stdout;
   expect(files).not.toContain('package/src/');expect(files).not.toContain('package/tests/');
   expect(files).not.toMatch(/\.mp4\n/);expect(files).toContain('package/LICENSE');
@@ -27,6 +28,9 @@ test('published tarball works outside source with production dependencies and sy
    catch(error){const e=error as Error&{stdout?:string;stderr?:string};e.message+='\n'+e.stdout+'\n'+e.stderr;throw e;}
   };
   expect(await run(['version'])).toMatchObject({version:'0.2.0'});
+  // The standalone Skill resolves npm in isolation; relative paths still belong to the caller.
+  const restored=JSON.parse((await exec(bin,['init','入口 目录','--json'],{cwd:root,env:{...process.env,TAKECRAFT_CALLER_CWD:cwd}})).stdout);
+  expect(restored.status).toBe('succeeded');await access(join(cwd,'入口 目录/project.json'));
   expect(await run(['setup'])).toMatchObject({status:'succeeded'});
   expect(await run(['doctor'])).toMatchObject({status:'succeeded'});
   expect(await run(['init','原始 配方'])).toMatchObject({status:'succeeded'});
