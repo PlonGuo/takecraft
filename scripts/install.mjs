@@ -29,6 +29,17 @@ async function switchCurrent(path,target){
  const pending=path+`.${process.pid}.pending`;
  try{await symlink(target,pending);await rename(pending,path);}finally{await rm(pending,{force:true});}
 }
+async function prepareSkillRuntime(release,version,run){
+ const manifestPath=join(release,'skills/takecraft/runtime.json');
+ if(!(await exists(manifestPath)))return; // Pre-npm releases use the source launcher.
+ const runtime=JSON.parse(await readFile(manifestPath,'utf8'));
+ if(runtime.package!=='takecraft'||runtime.version!==version.slice(1)||runtime.protocol!==1)throw new Error('Skill runtime does not match the requested release');
+ const entry=join(release,'skills/takecraft/scripts/run.mjs');
+ const actual=JSON.parse(await run(process.execPath,[entry,'version','--json'],release));
+ if(actual.version!==runtime.version||actual.protocol!==runtime.protocol)throw new Error('Skill resolved an unexpected runtime version');
+ await run(process.execPath,[entry,'setup','--json'],release);
+ await run(process.execPath,[entry,'doctor','--json'],release);
+}
 
 // Dependency hooks let lifecycle tests use real temporary directories without
 // downloading dependencies or touching a developer's installed Skill.
@@ -74,6 +85,9 @@ export async function install(options={},hooks={}){
    await writeFile(join(stage,'.takecraft-release.json'),JSON.stringify({version}));
    await rename(stage,release);stage=undefined;createdRelease=true;
   }
+  // Prepare the exact engine used by standalone Skills before reporting success.
+  // Failed npm preparation leaves the previous current pointer intact.
+  await prepareSkillRuntime(release,version,run);
   // Stable links resolve through the same current pointer, coupling Skill/code.
   await linkIfMissing(skill,skillTarget);await linkIfMissing(bin,join(current,'scripts/run.mjs'));
   await switchCurrent(current,release);activated=true;

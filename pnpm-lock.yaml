@@ -9,25 +9,25 @@ importers:
   .:
     dependencies:
       '@fontsource/noto-sans-sc':
-        specifier: ^5.2.0
+        specifier: 5.3.1
         version: 5.3.1
       esbuild:
-        specifier: ^0.28.0
+        specifier: 0.28.2
         version: 0.28.2
       fontkit:
-        specifier: ^2.0.4
+        specifier: 2.0.4
         version: 2.0.4
       motion:
         specifier: 14.6.0
         version: 14.6.0
       playwright:
-        specifier: ^1.56.0
+        specifier: 1.64.1
         version: 1.64.1
       sharp:
-        specifier: ^0.34.0
+        specifier: 0.34.5
         version: 0.34.5
       zod:
-        specifier: ^4.0.0
+        specifier: 4.6.7
         version: 4.6.7
     devDependencies:
       '@types/fontkit':

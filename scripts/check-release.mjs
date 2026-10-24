@@ -1,0 +1,13 @@
+import {execFileSync} from 'node:child_process';
+import {appendFileSync} from 'node:fs';
+import {releaseDecision} from './release-policy.mjs';
+const git=(...args)=>execFileSync('git',args,{encoding:'utf8'}).trim();
+const base=process.argv[2],head=process.argv[3]??'HEAD';
+if(!base)throw new Error('Usage: node scripts/check-release.mjs BASE [HEAD]');
+if(process.env.GITHUB_BASE_REF==='main'&&(process.env.GITHUB_HEAD_REF!=='dev'||process.env.PR_HEAD_REPO!==process.env.GITHUB_REPOSITORY))throw new Error('Release PR must come from this repository dev branch');
+const before=JSON.parse(git('show',`${base}:package.json`));
+const after=JSON.parse(git('show',`${head}:package.json`));
+const files=git('diff','--name-only',base,head).split('\n').filter(Boolean);
+const decision=releaseDecision(before.version,after.version,files);
+console.log(JSON.stringify({decision,before:before.version,after:after.version}));
+if(process.env.GITHUB_OUTPUT)appendFileSync(process.env.GITHUB_OUTPUT,`publish=${decision==='publish'}\n`);

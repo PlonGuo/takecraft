@@ -9,9 +9,13 @@ Agent 提供内容与动画意图，固定工具编排、渲染、混音与检�
 
 ## 找到同版本工具
 
-解析当前 SKILL.md 的真实路径，其所在 `skills/takecraft/` 的上两级就是工具根目录。运行 `node <工具根目录>/scripts/run.mjs <命令> --json`。安装器把代码与 Skill 放在同一版本目录，不要另找不同版本的全局命令。调用时保留当前工作目录；作品和素材使用绝对路径更清楚。
+以当前 SKILL.md 所在目录为 Skill 目录，运行 `node "<Skill目录>/scripts/run.mjs" <命令> --json`。Skill 可独立安装；入口读取旁边的 runtime.json，通过 npm 获取并缓存准确版本，不依赖源码 checkout 或全局 takecraft。保留当前工作目录；作品和素材使用绝对路径更清楚。
 
-先运行 `doctor --json`。缺少依赖时报告具体检查结果，并按工具 README 安装；不在制片过程中升级工具或改动用户环境。`catalog --kind all --summary --json` 用于发现动作、主题和配方。
+首次安装要求 Node.js >=22.20（包含 npm）、FFmpeg/ffprobe。运行 `version --json` 核对 runtime.json，再运行 `setup --json`；setup 复用已有 Chrome，或下载匹配的 Chromium。缺少 Node/FFmpeg 时报告检查结果；在用户安装请求授权范围内，可用已有 Homebrew 安装 `node@24`、`ffmpeg`，不要为普通制片擅自替换用户环境。首版只验收 macOS + Codex。
+
+日常制片先运行 `doctor --json`，再用 `catalog --kind all --summary --json` 发现动作、主题和配方。首次获取或缓存缺失时需要联网；失败保留错误，不换成 latest 或其他全局版本。不要在制作过程中更新工具。
+
+更新时从 PlonGuo/takecraft 最新正式 GitHub Release 获取固定 tag，用 skills CLI 安装该 tag 的 Skill，再运行上述检查。安装前检查 `~/.agents/skills/takecraft`、`${CODEX_HOME:-~/.codex}/skills/takecraft` 和项目 `.agents/skills/takecraft`；同名自定义 Skill 或源码链接不能直接覆盖。先保留旧内容，明确来源后迁移。安装后当前会话显式读取新 SKILL.md；后续若未自动识别，提示新建 Codex 会话。完成报告包括 Skill 来源/tag、作用域、工具版本和实际检查结果。
 
 ## 从需求制作产品片
 

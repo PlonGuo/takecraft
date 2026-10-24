@@ -1,0 +1,44 @@
+name: Release
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: takecraft-production
+  cancel-in-progress: false
+jobs:
+  checks:
+    uses: ./.github/workflows/verify.yml
+    with:
+      release-base: ${{ github.event.before }}
+  publish:
+    needs: checks
+    if: needs.checks.outputs.publish == 'true'
+    runs-on: macos-15
+    timeout-minutes: 15
+    environment: production
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+      - name: Prepare publishing CLI and renderer
+        run: |
+          npm install --global npm@12.2.1
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            brew install ffmpeg
+          fi
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
+        with:
+          name: takecraft-package-${{ github.sha }}
+          path: artifacts/package
+      - name: Publish verified package and release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/release.mjs artifacts/package/*.tgz

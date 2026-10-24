@@ -1,0 +1,59 @@
+name: Verify package
+on:
+  workflow_call:
+    inputs:
+      release-base:
+        type: string
+        default: ''
+    outputs:
+      publish:
+        value: ${{ jobs.verify.outputs.publish }}
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: macos-15
+    timeout-minutes: 30
+    outputs:
+      publish: ${{ steps.policy.outputs.publish }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          cache: pnpm
+      - name: Check release policy
+        id: policy
+        if: inputs.release-base != ''
+        env:
+          RELEASE_BASE: ${{ inputs.release-base }}
+          PR_HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+        run: node scripts/check-release.mjs "$RELEASE_BASE"
+      - run: pnpm install --frozen-lockfile
+      - name: Prepare renderer
+        run: |
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            brew install ffmpeg
+          fi
+          pnpm exec playwright install chromium
+      - run: pnpm typecheck
+      - name: Build one release artifact
+        run: |
+          mkdir -p artifacts/package
+          pnpm pack --pack-destination artifacts/package
+          node scripts/check-package.mjs artifacts/package/*.tgz
+      - name: Test source and real npm/pnpm package
+        run: |
+          TAKECRAFT_PACKAGE_ARCHIVE="$(pwd)/$(find artifacts/package -maxdepth 1 -name '*.tgz')"
+          export TAKECRAFT_PACKAGE_ARCHIVE
+          pnpm test
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: takecraft-package-${{ github.sha }}
+          path: artifacts/package/*.tgz
+          if-no-files-found: error
+          retention-days: 7

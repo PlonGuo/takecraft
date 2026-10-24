@@ -92,4 +92,14 @@ v0 发布前完整验证：27 文件 112 项通过（124.36 秒）。本机旧�
 
 v0 已发布：[Takecraft v0 · v0.1.1](https://github.com/PlonGuo/takecraft/releases/tag/v0.1.1)，PR #1 已合入 main，本机 main 与远端同步。公开匿名安装、升级、同版更新、doctor 与跨目录 compose 均实际验证通过，README 两条视频与 Release 下载均已就绪。macOS 安装入口修复后完整复查 27 文件、113 项通过（123.42 秒）；之前一轮浏览器关闭超时已记录于发布计划，独立复查及整套重跑均通过。Linux 未实机验证。验证后又清理 225,885,868 字节产物及临时安装副本；本机仍只留两个 demo 和必需运行依赖。
 
-下一步：等待用户提供参考视频，再按具体镜头扩展动作、主题或配方。v0 当前能力封板，不继续增加功能。
+## 当前实施：v0.2.0 Agent 优先分发
+
+用户已授权实施：[分发设计](2026-10-24-agent-first-distribution.md)、[实施计划](2026-10-24-distribution-implementation.md)。采用 MIT；npm 用户 plonguo 已注册并完成本机登录。GitHub 已公开，默认分支为 dev。
+
+- 可发布的完整 npm 包、setup/version 已实现。首次完整验证 119/119 通过；从源目录外安装，无 tsx/开发依赖，实际完成 450 帧视频及完整解码。
+- 独立 Skill 的固定版本入口已实现。真实 npm 子进程验证同名项目/全局命令隔离、中文空格/字面参数、离线缓存及缺缓存失败、中断传播；3/3 通过。Skill validator 通过。
+- 发布策略与 Actions 已实现：同一 tarball、pending→下载校验和出片→latest→tag/Release；内容/提交冲突拒绝，旧任务不回退 latest。6/6 策略与恢复测试通过，actionlint 通过。
+- npm/pnpm 实际安装均已出片；发布脚本 dry-run 通过，下载后使用的 smoke 脚本本地完成 450 帧出片。
+- 正在全套复验与独立审阅，尚未推送本轮实现、尚未发布 npm v0.2.0。下一步：审阅修复→GitHub CI→dev/main 发布→首次 npm 包及可信来源设置→公开安装/Codex 验收→清理临时产物。
+
+未完成的验收不得视为通过：GitHub 实际工作流、npm OIDC 可信发布、公开 tag Skill 安装及新 Codex 会话制作。本轮不扩大动画能力，后续新动作/主题预计 v0.3.0。
