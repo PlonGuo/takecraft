@@ -10,10 +10,12 @@ export function describeComponent(type:string){
 export function createActor(a:Actor,ink:string,accent:string):HTMLElement{
   const el=document.createElement(a.type==='image'?'img':'div');el.dataset.actor=a.id;
   Object.assign(el.style,{position:'absolute',boxSizing:'border-box',transformOrigin:'50% 50%',color:a.color??ink,overflow:a.clip?'hidden':'visible'});
-  if(a.type==='text')Object.assign(el.style,{whiteSpace:'pre-wrap',overflowWrap:'break-word',fontFamily:'Takecraft',fontSize:`${a.fontSize}px`,fontWeight:String(a.fontWeight),lineHeight:'1.2',textAlign:a.align});
+  if(a.type==='text')Object.assign(el.style,{whiteSpace:'pre-wrap',overflowWrap:'break-word',fontFamily:'Takecraft',fontSize:`${a.fontSize}px`,fontWeight:String(a.fontWeight),lineHeight:'1.2',textAlign:a.align,letterSpacing:`${a.letterSpacing}px`});
   if(a.type==='image')Object.assign(el.style,{objectFit:a.fit});
   if(a.type==='surface'||a.type==='window')Object.assign(el.style,{background:a.background??'#ffffff',boxShadow:'0 28px 90px #182b2320',border:'1px solid #263b2c15'});
   if(a.type==='shape'||a.type==='cursor')el.style.background=a.background??accent;
+  if(a.borderColor!==undefined||a.borderWidth!==undefined)el.style.border=`${a.borderWidth??1}px solid ${a.borderColor??ink}`;
+  if(a.shadow!==undefined)el.style.boxShadow={none:'none',soft:'0 12px 32px #182b2312',float:'0 30px 85px #182b2320',hard:`8px 8px 0 ${ink}`,glow:`0 20px 80px ${accent}20`}[a.shadow];
   if(a.type==='cursor')el.style.clipPath='polygon(0 0, 0 90%, 26% 67%, 45% 100%, 64% 88%, 47% 55%, 85% 50%)';
   if(a.type==='window'){
     const bar=document.createElement('div');Object.assign(bar.style,{height:'42px',borderBottom:'1px solid #142b2210',display:'flex',gap:'8px',alignItems:'center',paddingLeft:'18px'});

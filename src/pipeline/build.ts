@@ -20,7 +20,7 @@ import {acquireLock} from './lock.js';
 import {readCache,saveCache,type CacheEntry} from './cache.js';
 import {saveState} from './state.js';
 import {retryBrowser} from './retry.js';
-import {visualKey,engineHash} from './fingerprint.js';
+import {visualKey,engineHash,dependencyHash} from './fingerprint.js';
 import {mux} from './mux.js';
 export type BuildOptions={profile?:string;browser?:string;resume?:boolean;preview?:boolean;onProgress?:(stage:string)=>void};
 export async function buildProject(projectPath:string,options:BuildOptions={}):Promise<BuildResult>{
@@ -39,7 +39,7 @@ export async function buildProject(projectPath:string,options:BuildOptions={}):P
   const v=validateProject(input);if(!v.project)throw new TakecraftError(v.issues,2);
   const assets=await prepareAssets(v.project,projectDir),t=compileProject(v.project,assets);await atomicJSON(join(out,'timeline.json'),t);
   await announce('tools');const browser=await browserVersion(options.browser),ffmpeg=(await run('ffmpeg',['-version'])).stdout.split('\n')[0];
-  const visualEngine=hash(await runtimeBundle()+await engineHash(['render/browser','render/serve','render/frames','render/encode','project/compile','project/schema','runtime/index','runtime/sample','runtime/camera','components/registry']));
+  const visualEngine=hash(await runtimeBundle()+await dependencyHash()+await engineHash(['render/browser','render/serve','render/frames','render/encode','render/preview','project/compile','project/schema','project/validate','project/images','motion/schema','motion/presets','runtime/index','runtime/sample','runtime/camera','components/registry']));
   const vk=visualKey(t,assets,visualEngine,browser,ffmpeg);
   const render=await stage('render','visual-'+vk,async()=>{
    const frames=await retryBrowser(()=>renderFrames({timeline:t,assets,directory:join(out,'frames'),browser:options.browser,onCapture:frame=>{result.captures++;appendFileSync(join(out,'captures.jsonl'),JSON.stringify({frame,time:frame/t.fps})+'\n');}}));
