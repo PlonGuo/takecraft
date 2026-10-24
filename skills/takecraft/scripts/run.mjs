@@ -12,7 +12,7 @@ try {
  // version. Resolve from an empty project and let the CLI restore caller cwd.
  directory=await mkdtemp(join(tmpdir(),'takecraft-exec-'));
  await writeFile(join(directory,'package.json'),'{"private":true}\n');
- const child=spawn('npm',['exec','--yes','--prefer-offline','--prefix',directory,'--workspaces=false',`--package=${runtime.package}@${runtime.version}`,'--','takecraft',...process.argv.slice(2)],{
+ const child=spawn('npm',['exec','--yes','--prefix',directory,'--workspaces=false',`--package=${runtime.package}@${runtime.version}`,'--','takecraft',...process.argv.slice(2)],{
   cwd:directory,stdio:'inherit',detached:process.platform!=='win32',env:{...process.env,TAKECRAFT_CALLER_CWD:process.cwd()},
  });
  let interrupted;
