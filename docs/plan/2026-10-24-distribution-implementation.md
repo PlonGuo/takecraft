@@ -13,7 +13,7 @@
 ## Global Constraints
 
 - 首版只完整验收 Codex + macOS；不新增动画功能、其他 Agent 适配和更新提醒。
-- npm 包名优先 takecraft（目前未占用）；发布身份与许可证等待用户回答，未确认前不发布或授予许可证。
+- npm 包名 takecraft；用户已确认 npm 身份 plonguo、本机登录和 MIT 许可证。首次发布使用经 CI 验证的真实包。
 - Skill 使用准确发行版本，不能跟默认 dev/main 分支拿到未发布版本。
 - 不改变用户作品；临时验证产物结束后清理，只留现有两个 README demo。
 - 默认分支 dev；main 正常只接收 dev 发布合并；版本号在 PR 中确定，流水线不回写源码。
@@ -32,11 +32,11 @@
 
 **Interfaces:** `setup(browser?: string): Promise<DoctorResult>` 准备缺少的浏览器并复检；doctor 返回 `version`、`checks` 和 `status`，失败退出非零。`takecraft version --json` 返回版本及支持的安装平台。npm `bin` 入口显式调用 execute，不依赖 argv 的非规范化路径比较。
 
-- [ ] 写 setup 缺浏览器可修复、缺 FFmpeg 不误报成功、重复调用不下载的行为测试；验证旧实现失败。
-- [ ] 实现 setup/version、编译入口及 package.files/repository/engines；不依赖 tsx。保留源码开发入口和旧安装器兼容。
-- [ ] 写真实 tarball 测试：`pnpm pack` → 临时目录 production install → 从别的中文路径运行 doctor/init/compose/preview/build、ffprobe/完整解码。确认源码和 devDependencies 不在包里。
-- [ ] 运行 `pnpm typecheck`、`pnpm build`、`pnpm exec vitest run tests/unit/setup.test.ts tests/e2e/package.test.ts`；应全部通过。
-- [ ] 按明确文件列表提交 Task 1。
+- [x] 写 setup 缺浏览器可修复、缺 FFmpeg 不误报成功、重复调用不下载的行为测试；验证旧实现失败。
+- [x] 实现 setup/version、编译入口及 package.files/repository/engines；不依赖 tsx。保留源码开发入口和旧安装器兼容。
+- [x] 写真实 tarball 测试：`pnpm pack` → 临时目录 production install → 从别的中文路径运行 doctor/init/compose/preview/build、ffprobe/完整解码。确认源码和 devDependencies 不在包里。
+- [x] 运行 `pnpm typecheck`、`pnpm build`、`pnpm exec vitest run tests/unit/setup.test.ts tests/e2e/package.test.ts`；应全部通过。
+- [x] 按明确文件列表提交 Task 1。
 
 ### Task 2: 独立 Skill 与准确版本调用
 
@@ -44,11 +44,11 @@
 
 **Interfaces:** Skill 内 `run.mjs <CLI args>` 读取 runtime.json 的 package/version，使用 npm 的固定版本执行能力；保留 cwd、参数、退出码和信号，日志 stderr、结果 stdout。检查脚本校验版本清单等于 package.version。
 
-- [ ] 先写实际子进程测试：Skill 被复制到独立目录、cwd 有错误同名包/全局命令、空格参数、失败和信号传播；观察失败。
-- [ ] 实现轻量入口与版本清单。若 npm exec 对本地同名包解析不满足准确版本约束，采用最小隔离调用目录并记录决定，不能绕过版本核验。
-- [ ] 重写 Skill 安装/检查/制作步骤，README 以给 Codex 的安装请求为主入口，安装源固定正式 Release tag；不得覆盖旧 Skill。
-- [ ] 运行 `pnpm exec vitest run tests/e2e/skill-launcher.test.ts` 和 Skill validator；版本一致性检查通过。
-- [ ] 提交 Task 2；正式公开发行后再验证 skills CLI 安装和新 Codex 会话识别。
+- [x] 先写实际子进程测试：Skill 被复制到独立目录、cwd 有错误同名包/全局命令、空格参数、失败和信号传播；观察失败。
+- [x] 实现轻量入口与版本清单。若 npm exec 对本地同名包解析不满足准确版本约束，采用最小隔离调用目录并记录决定，不能绕过版本核验。
+- [x] 重写 Skill 安装/检查/制作步骤，README 以给 Codex 的安装请求为主入口，安装源固定正式 Release tag；不得覆盖旧 Skill。
+- [x] 运行 `pnpm exec vitest run tests/e2e/skill-launcher.test.ts` 和 Skill validator；版本一致性检查通过。
+- [x] 提交 Task 2；正式公开发行后再验证 skills CLI 安装和新 Codex 会话识别。
 
 ### Task 3: 可恢复的发布流程与 Actions
 
@@ -56,11 +56,11 @@
 
 **Interfaces:** release-policy 的纯函数处理稳定版本比较、已有包/版本检查、最新指针是否推进；release 脚本组合 npm/GitHub 操作。release CLI 只在 main 对固定 SHA 和 tarball 发布；CI 用 PR merge SHA/实际 dev SHA 验证。
 
-- [ ] 先写新版本、docs-only、代码变更未升版、已有版本内容冲突、旧失败任务重跑的测试并观察失败。
-- [ ] 实现发布检查、同一 tarball pending→下载校验→latest→tag/Release、有限重试、重跑恢复和防 latest 回退。
-- [ ] 配置 macOS 单平台 CI：类型检查、完整测试、构建和实际打包冒烟；main 发布 workflow 复用检查，最小 OIDC/GitHub 权限，production 仅 main，串行且不取消进行中的发布。
-- [ ] 验证 `pnpm exec vitest run tests/unit/release.test.ts`、workflow YAML/Actions 静态检查；本地 release dry-run 无远端写入。
-- [ ] 提交 Task 3，更新发布文档和变更记录。
+- [x] 先写新版本、docs-only、代码变更未升版、已有版本内容冲突、旧失败任务重跑的测试并观察失败。
+- [x] 实现发布检查、同一 tarball pending→下载校验→latest→tag/Release、有限重试、重跑恢复和防 latest 回退。
+- [x] 配置 macOS 单平台 CI：类型检查、完整测试、构建和实际打包冒烟；main 发布 workflow 复用检查，最小 OIDC/GitHub 权限，production 仅 main，串行且不取消进行中的发布。
+- [x] 验证 `pnpm exec vitest run tests/unit/release.test.ts`、workflow YAML/Actions 静态检查；本地 release dry-run 无远端写入。
+- [x] 提交 Task 3，更新发布文档和变更记录。
 
 ### Task 4: 集成验收、审阅与正式发布
 
