@@ -66,9 +66,9 @@
 
 **Files:** docs/plan/README.md、CHANGELOG.md、README.md；GitHub 分支、保护规则、production 环境、npm 发布设置。
 
-- [ ] 完整运行 typecheck/build/test、Skill 校验、实际 npm/pnpm 安装包检查，记录已覆盖和未覆盖条件。
-- [ ] 一次独立全分支审阅；重要问题用失败回归验证后修复，完成要求的复测。
-- [ ] 推送 feature，PR 合入 dev 并跑 CI；设置 dev 为默认分支和必要保护规则。保护 main 仅经 PR 发布。
+- [x] 完整运行 typecheck/build/test、Skill 校验、实际 npm/pnpm 安装包检查，记录已覆盖和未覆盖条件。
+- [x] 一次独立全分支审阅；重要问题用失败回归验证后修复，完成要求的复测。
+- [x] 推送 feature，PR 合入 dev 并跑 CI；设置 dev 为默认分支和必要保护规则。保护 main 仅经 PR 发布。
 - [ ] 用户完成 npm 身份/许可证后建立首包和 Trusted Publisher；首次身份初始化不能假装已经由未存在的 npm 包 OIDC 配置完成。
 - [ ] dev → main 发布 PR，观察 Actions 完整结果；任何失败明确修复或记录阻塞，不绕过发布检查。
 - [ ] 从公开 npm/GitHub tag 安装，验证 Codex Skill 发现与制作；同步 main → dev，更新状态、清理本次临时产物及开发 worktree。

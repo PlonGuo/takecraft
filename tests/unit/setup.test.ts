@@ -1,4 +1,7 @@
+import {readFileSync} from 'node:fs';
 import {beforeEach,expect,test,vi} from 'vitest';
+const packageVersion=JSON.parse(readFileSync(new URL('../../package.json',import.meta.url),'utf8')).version;
+
 const state=vi.hoisted(()=>({browser:false,ffmpeg:true,downloads:0,downloadError:false}));
 vi.mock('../../src/render/browser.js',async original=>({...await original<any>(),browserVersion:async()=>{
  if(!state.browser)throw Error('browser missing');return 'test-browser';
@@ -13,7 +16,7 @@ beforeEach(()=>Object.assign(state,{browser:false,ffmpeg:true,downloads:0,downlo
 
 test('setup prepares a missing browser, checks the result, and is repeatable',async()=>{
  const first=await execute(['setup','--json']);expect(first.exitCode).toBe(0);
- expect(first.data).toMatchObject({status:'succeeded',version:'0.2.0'});
+ expect(first.data).toMatchObject({status:'succeeded',version:packageVersion});
  expect(state.downloads).toBe(1);
  expect((await execute(['setup','--json'])).exitCode).toBe(0);expect(state.downloads).toBe(1);
 });
@@ -34,5 +37,5 @@ test('failed browser download keeps a useful failure result',async()=>{
 });
 test('version can be queried without a browser or ffmpeg',async()=>{
  state.ffmpeg=false;
- expect(await execute(['version','--json'])).toMatchObject({exitCode:0,data:{status:'succeeded',name:'takecraft',version:'0.2.0',verifiedPlatforms:['darwin']}});
+ expect(await execute(['version','--json'])).toMatchObject({exitCode:0,data:{status:'succeeded',name:'takecraft',version:packageVersion,verifiedPlatforms:['darwin']}});
 });
