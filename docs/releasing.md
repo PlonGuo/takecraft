@@ -16,9 +16,9 @@ v0.1.1 已封板；v0.2.0 负责分发；后续新动作/主题用 v0.3.0，当�
 
 ## 正常流程
 
-1. feature → dev，CI 验证；dev 为 GitHub 默认分支。
+1. feature → dev，PR 运行快速 CI：类型、打包检查、单元、全部浏览器及短片冒烟；dev 为 GitHub 默认分支。受保护的 dev 通过 PR 合入后不再重复运行 push 全套测试。
 2. dev → main 发布 PR。main 只接收同仓库 dev；保留 merge commit 历史，不 squash 长期分支。生产相关文件变化必须升版，只有 docs/tests/README/CHANGELOG/AGENTS/.gitignore 变化且版本不变才跳过发布。
-3. main 实际提交重新运行同一验证工作流，构建一次 tarball（npm 安装压缩包），从该包分别用 npm/pnpm 安装并出片，上传同一文件供发布 job 使用。
+3. dev → main 的 PR 同样运行快速检查；main 实际提交使用同一工作流的完整测试模式，构建一次 tarball（npm 安装压缩包），从该包分别用 npm/pnpm 安装并出片，上传同一文件供发布 job 使用。
 4. production job 用 OIDC（GitHub 提供的短期身份凭证）发布到 npm 的 pending 分发标签；下载准确版本，核对文件内容及源码提交，再实际出片。
 5. 通过后将 npm latest 指向新版本，创建不可变 Git tag 和正式 GitHub Release。latest 是“最新版”的指针；旧任务重跑不得倒退 npm 或 GitHub 的指针。
 6. 发布后将 main 合并回 dev，保留历史。Skill 安装只用正式 Release tag，不跟随默认 dev 或正在发布的 main。
@@ -48,6 +48,7 @@ GitHub production 环境仅允许 main 部署。当前 dist-tag 的 OIDC 权限�
 ## 失败与恢复
 
 - 上传前失败：修复或重跑原 Actions run；npm 未变化。
+- 上传后 npm 同步：读回校验最多等待三分钟，间隔从两秒递增到十五秒；完整性错误立即失败。超时可以重跑原发布 job，不重复上传已有版本。
 - 上传后下载/出片失败：不会推进 latest 或创建 Release。原内容可重试网络故障；内容有问题必须升新版本，不能覆盖或删除已发布版本。
 - npm 成功、GitHub 失败：全流程仍失败；重跑原 run 补齐 tag/Release。已有包的版本、内容哈希和源码提交必须一致，已有 tag 必须指向原提交。
 - 新版已发布后重跑旧任务：只补旧版缺失产物，不能回退 latest。发布工作流串行且不取消正在发布的任务；GitHub 等待队列可能只保留一个 pending run，因此避免同时合入多份发布 PR，确认每版发布后再发下一版。

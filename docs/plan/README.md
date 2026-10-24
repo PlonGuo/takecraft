@@ -103,4 +103,10 @@ v0 已发布：[Takecraft v0 · v0.1.1](https://github.com/PlonGuo/takecraft/rel
 - 完整复验 31 文件、129/129 通过；独立审阅发现的旧安装器运行时准备问题已用失败回归修复。Node 24 初始化及 Chromium 随机定位差异在 CI 环境复现并修复，没有放宽像素一致性要求。
 - PR #2 已合入 dev，PR #3 已合入 main（08771f0）；dev/main 均要求 PR 和 checks / verify，production 仅允许 main。main Release 40074629034 已恢复成功，v0.2.0 npm 包与 GitHub Release 可公开使用。公开下载与 CI tarball 逐字节相同；公开 npm setup、正式 tag 的 skills CLI 全局安装和准确版本入口均已通过。
 
-npm 可信来源已绑定 release.yml / production，并授权 publish 与 dist-tag，但来源必须在两天内成功自动发布一个新版本才能完成验证。正在准备 v0.2.1 文档修订版走正常流程；新 Codex 会话已自动发现正式 Skill 并完成 compose / preview / build，生成 15 秒 1080p30、450 帧 H.264/AAC；质量 passed、完整解码通过。未逐项验收连续节奏与听感。v0.2.1 本地 31 文件、129/129 测试通过（185.63 秒）；自动发布及最终清理仍在执行。尚未实际通过的验收不算完成。本轮不扩大动画能力，后续新动作/主题预计 v0.3.0。
+npm 可信来源已绑定 release.yml / production，并授权 publish 与 dist-tag。v0.2.1 由 GitHub OIDC 实际上传，附带来源证明；首次读回因 npm 同步超过六秒而失败，随后同一工作流恢复成功，latest/tag/Release 已补齐；新 Codex 会话已自动发现正式 Skill 并完成 compose / preview / build，生成 15 秒 1080p30、450 帧 H.264/AAC；质量 passed、完整解码通过。未逐项验收连续节奏与听感。v0.2.1 本地 31 文件、129/129 测试通过（185.63 秒）。用户随后要求缩短 feature → dev 等待；正在以 v0.2.2 修复同步等待和 CI 分层，最终安装、同步与清理仍在执行。尚未实际通过的验收不算完成。本轮不扩大动画能力，后续新动作/主题预计 v0.3.0。
+
+### CI 耗时与后续优化
+
+用户反馈当前 CI 过慢。实测 v0.2.1 PR #4 的验证耗时 548.66 秒；安装包出片 149.88 秒、产品片 147.18 秒、Motion 产品片 84.41 秒。`fileParallelism: false` 使文件串行运行，同一完整套件又分别在 feature PR、dev push、发布 PR 和 main Release 执行。依赖准备不是主要瓶颈。
+
+按用户要求，v0.2.2 将所有 PR 改为快速检查，取消受保护 dev 的重复 push 测试；main Release 仍跑完整套件与真实 npm/pnpm 安装出片。快检保留全部单元/浏览器测试及一秒真实 1080p 编码，本地 26 文件、125/125 通过（33.10 秒）；GitHub 时间待实测。后续若仍慢再考虑独立测试分组并行，目前保持串行避免抢资源。main 正式发布约十二分钟可以接受；普通 feature PR 目标 1–3 分钟，尚不是性能承诺。

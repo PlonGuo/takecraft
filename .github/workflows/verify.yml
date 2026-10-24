@@ -2,6 +2,9 @@ name: Verify package
 on:
   workflow_call:
     inputs:
+      suite:
+        type: string
+        default: full
       release-base:
         type: string
         default: ''
@@ -46,12 +49,19 @@ jobs:
           mkdir -p artifacts/package
           pnpm pack --pack-destination artifacts/package
           node scripts/check-package.mjs artifacts/package/*.tgz
-      - name: Test source and real npm/pnpm package
+      - name: Test ${{ inputs.suite }} suite
+        env:
+          VERIFY_SUITE: ${{ inputs.suite }}
         run: |
           TAKECRAFT_PACKAGE_ARCHIVE="$(pwd)/$(find artifacts/package -maxdepth 1 -name '*.tgz')"
           export TAKECRAFT_PACKAGE_ARCHIVE
-          pnpm test
+          case "$VERIFY_SUITE" in
+            quick) pnpm test:quick ;;
+            full) pnpm test ;;
+            *) echo "Unknown verification suite" >&2; exit 1 ;;
+          esac
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: inputs.suite == 'full'
         with:
           name: takecraft-package-${{ github.sha }}
           path: artifacts/package/*.tgz
