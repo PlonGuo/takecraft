@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import {mkdir,mkdtemp,readFile,writeFile,lstat,readlink,symlink,rename,rm,readdir,chmod} from 'node:fs/promises';
+import {mkdir,mkdtemp,readFile,writeFile,lstat,readlink,symlink,rename,rm,readdir,chmod,realpath} from 'node:fs/promises';
 import {homedir} from 'node:os';
 import {resolve,join,dirname,sep} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -91,7 +91,7 @@ export async function install(options={},hooks={}){
  }
 }
 
-if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
+if(process.argv[1]&&await realpath(process.argv[1])===fileURLToPath(import.meta.url)){
  try{
   const {values}=parseArgs({options:{version:{type:'string'},root:{type:'string'},'skill-dir':{type:'string'},help:{type:'boolean'}}});
   if(values.help)console.log('Takecraft installer: [--version v0.1.0] [--root PATH] [--skill-dir PATH]. Repeat to update. Requires Node >=22.12, pnpm 10, FFmpeg.');

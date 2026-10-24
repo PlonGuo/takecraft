@@ -2,7 +2,7 @@
 
 把品牌、文案、功能点和风格交给 Agent，由本地工具生成完整的二维产品视频。Agent 负责内容与选择，Takecraft 负责动作计算、排版、逐帧渲染、声音、字幕和检查。
 
-首个封板版本为 **v0.1.0**：15 秒、1080p30，五类可复用动作，Motion 弹簧采样，纸间 / 夜航 / 构想三套主题。
+当前封板版本为 **v0.1.1**：15 秒、1080p30，五类可复用动作，Motion 弹簧采样，纸间 / 夜航 / 构想三套主题。
 
 ## Demo
 
@@ -14,7 +14,7 @@ https://github.com/user-attachments/assets/0d4231f4-7de7-409c-99de-5e674eb18b81
 
 https://github.com/user-attachments/assets/048ef7b1-8d3c-4984-b2c4-f592695bf1c8
 
-两个 MP4 也可从 [v0.1.0 Release](https://github.com/PlonGuo/takecraft/releases/tag/v0.1.0) 下载。无需静态截图。
+两个 MP4 也可从 [v0.1.1 Release](https://github.com/PlonGuo/takecraft/releases/tag/v0.1.1) 下载。无需静态截图。
 
 ## 一条命令安装或更新
 
@@ -35,7 +35,7 @@ https://github.com/user-attachments/assets/048ef7b1-8d3c-4984-b2c4-f592695bf1c8
 指定版本安装或回退：
 
 ```sh
-(set -o pipefail; curl -fsSL https://raw.githubusercontent.com/PlonGuo/takecraft/main/install.sh | bash -s -- --version v0.1.0)
+(set -o pipefail; curl -fsSL https://raw.githubusercontent.com/PlonGuo/takecraft/main/install.sh | bash -s -- --version v0.1.1)
 ```
 
 如果中断后再次安装提示 `.install-lock`，先确认没有安装进程运行，再移除提示中的锁目录。新开一个 Codex 对话以加载更新后的 Skill。

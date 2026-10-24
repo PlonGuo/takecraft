@@ -1,9 +1,16 @@
 import {expect,test} from 'vitest';
-import {mkdtemp,mkdir,writeFile,readFile,readlink,rm,lstat,readdir} from 'node:fs/promises';
+import {mkdtemp,mkdir,writeFile,readFile,readlink,rm,lstat,readdir,symlink} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join,resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 const {install,command}=await import(pathToFileURL(resolve('scripts/install.mjs')).href);
+test('runs the CLI through a symlinked directory, as with macOS temporary paths',async()=>{
+ const temp=await mkdtemp(join(tmpdir(),'takecraft-entry-'));
+ try{
+  await symlink(resolve('scripts'),join(temp,'scripts'));
+  expect(await command(process.execPath,[join(temp,'scripts/install.mjs'),'--help'])).toContain('Takecraft installer:');
+ }finally{await rm(temp,{recursive:true,force:true});}
+});
 async function fixture(){
  const temp=await mkdtemp(join(tmpdir(),'takecraft install ')),root=join(temp,'工具'),skillDir=join(temp,'skills');
  const calls:string[]=[];
