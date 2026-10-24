@@ -5,7 +5,9 @@ import {serveScene} from './serve.js';
 export type SceneSession={page:Page;seek(t:number):Promise<void>;inspect(t:number):Promise<FrameInspection>;close():Promise<void>};
 export function browserOptions(executablePath?:string){
   if(executablePath)return {executablePath};
-  if(existsSync(chromium.executablePath()))return {};
+  // Use full Chromium's unified headless renderer, matching the Chrome fallback.
+  // Headless Shell can rasterize cached shadows differently after random seeks.
+  if(existsSync(chromium.executablePath()))return {channel:'chromium'};
   if(process.platform==='darwin'&&existsSync('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'))return {channel:'chrome'};
   fail('BROWSER_MISSING','browser','Run pnpm exec playwright install chromium, or pass --browser /path/to/chrome',2);
 }
