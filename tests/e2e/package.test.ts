@@ -10,9 +10,11 @@ const exec=promisify(execFile);
 test('published tarball works outside source with production dependencies and symlinked CLI',async()=>{
  const root=await mkdtemp(join(tmpdir(),'takecraft-package-'));
  try{
-  await exec('pnpm',['build'],{cwd:process.cwd()});
-  await exec('pnpm',['pack','--pack-destination',root],{cwd:process.cwd()});
-  const archive=join(root,(await readdir(root)).find(f=>f.endsWith('.tgz'))!);
+  if(!process.env.TAKECRAFT_PACKAGE_ARCHIVE){
+   await exec('pnpm',['build'],{cwd:process.cwd()});
+   await exec('pnpm',['pack','--pack-destination',root],{cwd:process.cwd()});
+  }
+  const archive=process.env.TAKECRAFT_PACKAGE_ARCHIVE??join(root,(await readdir(root)).find(f=>f.endsWith('.tgz'))!);
   await exec(process.execPath,['scripts/check-package.mjs',archive]);
   const files=(await exec('tar',['-tzf',archive])).stdout;
   expect(files).not.toContain('package/src/');expect(files).not.toContain('package/tests/');
@@ -45,5 +47,13 @@ test('published tarball works outside source with production dependencies and sy
   expect(Number(media.format.duration)).toBe(15);
   expect(media.streams.find((s:any)=>s.codec_type==='video')).toMatchObject({width:1920,height:1080});
   await expect(run(['compose','brief.json','产品 视频'])).rejects.toMatchObject({code:2});
+  const pnpmInstalled=join(root,'pnpm-installed');await mkdir(pnpmInstalled);
+  await writeFile(join(pnpmInstalled,'package.json'),JSON.stringify({private:true}));
+  await exec('pnpm',['add','--prod',archive],{cwd:pnpmInstalled,timeout:120000,maxBuffer:4*1024*1024});
+  const pnpmBin=join(pnpmInstalled,'node_modules/.bin/takecraft');
+  const pnpmRun=async(...args:string[])=>JSON.parse((await exec(pnpmBin,[...args,'--json'],{cwd,timeout:120000,maxBuffer:4*1024*1024})).stdout);
+  expect((await pnpmRun('doctor')).status).toBe('succeeded');
+  const pnpmProject=await pnpmRun('compose','brief.json','pnpm 视频');
+  expect((await pnpmRun('build',pnpmProject.projectPath,'--no-preview')).status).toBe('succeeded');
  }finally{await rm(root,{recursive:true,force:true});}
 },240000);
