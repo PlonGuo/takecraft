@@ -4,6 +4,8 @@ import {validateProject} from '../../src/project/validate.js';
 import {compileProject} from '../../src/project/compile.js';
 import {prepareAssets} from '../../src/project/assets.js';
 import {openScene} from '../../src/render/browser.js';
+import {mkdir,writeFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
 
 test('Motion actions preserve pixels and the same surface across random seeks',async()=>{
  const v=validateProject({...fixture(),duration:8,actors:[{id:'box',type:'surface',x:300,y:300,width:500,height:250,radius:24},{id:'label',parent:'box',type:'text',text:'持续存在的对象',x:30,y:30,width:400,height:80,fontSize:32}],actions:[
@@ -17,7 +19,16 @@ test('Motion actions preserve pixels and the same surface across random seeks',a
  try{
   await s.page.evaluate(()=>{(window as any).savedSurface=document.querySelector('[data-actor="box"]');});
   const reference=new Map<number,Buffer>();for(const time of [.2,.9,2.4,3.5,5.7]){await s.seek(time);reference.set(time,await s.page.screenshot());}
-  for(const time of [5.7,.2,3.5,.9,2.4]){await s.seek(time);expect(await s.page.screenshot()).toEqual(reference.get(time));}
+  for(const time of [5.7,.2,3.5,.9,2.4]){
+   await s.seek(time);const actual=await s.page.screenshot(),expected=reference.get(time)!;
+   if(!actual.equals(expected)){
+    await mkdir('artifacts/seek-diff',{recursive:true});
+    await writeFile(`artifacts/seek-diff/${time}-expected.png`,expected);
+    await writeFile(`artifacts/seek-diff/${time}-actual.png`,actual);
+   }
+   const hash=(bytes:Buffer)=>createHash('sha256').update(bytes).digest('hex');
+   expect(hash(actual),`Repeated seek at ${time}s must produce identical pixels`).toBe(hash(expected));
+  }
   expect(await s.page.evaluate(()=>(window as any).savedSurface===document.querySelector('[data-actor="box"]'))).toBe(true);
   expect((await s.inspect(7)).boxes.box.opacity).toBe(0);
  }finally{await s.close();}

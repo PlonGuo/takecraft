@@ -64,3 +64,21 @@ test('rejects overlapping install and Skill paths before creating directories',a
   await expect(lstat(f.root)).rejects.toThrow();
  }finally{await rm(f.temp,{recursive:true,force:true});}
 });
+test('prepares exact standalone Skill runtime before activation and preserves old version on failure',async()=>{
+ const f=await fixture();try{
+  await install(f.options,f.hooks);const previous=await readlink(join(f.root,'current'));
+  const downloads=async(version:string,stage:string)=>{await f.hooks.download(version,stage);await mkdir(join(stage,'skills/takecraft/scripts'));await writeFile(join(stage,'skills/takecraft/runtime.json'),JSON.stringify({package:'takecraft',version:version.slice(1),protocol:1}));};
+  let fail=true;const skillCalls:string[]=[];
+  const hooks={download:downloads,async command(cmd:string,args:string[]){
+   if(args[0]?.includes('skills/takecraft/scripts/run.mjs')){
+    skillCalls.push(args[1]);if(fail&&args[1]==='setup')throw Error('npm cache unavailable');
+    if(args[1]==='version')return JSON.stringify({version:'0.2.0',protocol:1});
+   }return f.hooks.command(cmd,args);
+  }};
+  await expect(install({...f.options,version:'v0.2.0'},hooks)).rejects.toThrow('npm cache unavailable');
+  expect(await readlink(join(f.root,'current'))).toBe(previous);
+  fail=false;await install({...f.options,version:'v0.2.0'},hooks);
+  expect(skillCalls.slice(-3)).toEqual(['version','setup','doctor']);
+  const count=skillCalls.length;await install({...f.options,version:'v0.2.0'},hooks);expect(skillCalls.slice(count)).toEqual(['version','setup','doctor']);
+ }finally{await rm(f.temp,{recursive:true,force:true});}
+});
