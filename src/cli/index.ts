@@ -3,6 +3,7 @@ import {parseArgs} from 'node:util';
 import {dirname,join,resolve} from 'node:path';
 import {randomUUID} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
+import {realpath} from 'node:fs/promises';
 import {fail} from '../project/types.js';
 import {projectJSONSchema} from '../project/schema.js';
 import {listComponents,describeComponent} from '../components/registry.js';
@@ -12,6 +13,8 @@ import {readStatus} from '../pipeline/state.js';
 import {loadProject} from './project.js';
 import {initProject} from './init.js';
 import {doctor} from './doctor.js';
+import {setup} from './setup.js';
+import {versionInfo} from './version.js';
 import {failure,output} from './output.js';
 import {composeProject} from './compose.js';
 import {listActions,describeAction} from '../motion/registry.js';
@@ -22,7 +25,7 @@ const recipes=[{id:'product-launch',description:'原始 15 秒产品片，使用
 const briefExample={id:'demo',brand:'轻舟',headline:'让灵感，顺流成章。',tagline:'从一闪而过，到下一步行动。',features:[{title:'记录灵感',detail:'留住每个好想法。'},{title:'开始创作',detail:'把想法变成下一步。'}],cta:'开始创作',theme:'paper'};
 
 const commands:Record<string,{args:number;options:string[]}>={
- help:{args:0,options:[]},doctor:{args:0,options:['browser']},catalog:{args:0,options:['summary','kind']},
+ help:{args:0,options:[]},doctor:{args:0,options:['browser']},setup:{args:0,options:['browser']},version:{args:0,options:[]},catalog:{args:0,options:['summary','kind']},
  compose:{args:2,options:['theme']},
  describe:{args:1,options:[]},init:{args:1,options:['recipe']},validate:{args:1,options:[]},
  preview:{args:1,options:['browser']},build:{args:1,options:['browser','profile','resume','no-preview']},status:{args:1,options:[]},
@@ -38,8 +41,10 @@ export async function execute(args:string[]):Promise<{data:unknown;exitCode:numb
   for(const key of Object.keys(values))if(!['json','help'].includes(key)&&!config.options.includes(key))fail('ARGUMENT_INVALID',key,`--${key} is not supported by ${command}`,2);
   const browser=values.browser as string|undefined,path=positionals[1];let data:unknown;
   switch(command){
-   case 'help':data={status:'succeeded',usage:['doctor [--browser PATH]','catalog [--kind components|actions|themes|recipes|all] --summary','describe TYPE | project | brief | action:NAME | theme:NAME | recipe:product-launch-v2','init DIRECTORY [--recipe product-launch]','compose BRIEF.json DIRECTORY [--theme NAME]','validate PROJECT.json','preview PROJECT.json [--browser PATH]','build PROJECT.json [--profile draft] [--resume] [--no-preview] [--browser PATH]','status DIRECTORY'],options:'Use --json for one JSON result on stdout; progress goes to stderr.'};break;
-   case 'doctor':{const result=await doctor(browser);return {data:result,exitCode:result.status==='succeeded'?0:1};}
+   case 'help':data={status:'succeeded',usage:['setup [--browser PATH]','version','doctor [--browser PATH]','catalog [--kind components|actions|themes|recipes|all] --summary','describe TYPE | project | brief | action:NAME | theme:NAME | recipe:product-launch-v2','init DIRECTORY [--recipe product-launch]','compose BRIEF.json DIRECTORY [--theme NAME]','validate PROJECT.json','preview PROJECT.json [--browser PATH]','build PROJECT.json [--profile draft] [--resume] [--no-preview] [--browser PATH]','status DIRECTORY'],options:'Use --json for one JSON result on stdout; progress goes to stderr.'};break;
+   case 'version':data=versionInfo();break;
+   case 'setup':
+   case 'doctor':{const result=await (command==='setup'?setup:doctor)(browser);return {data:result,exitCode:result.status==='succeeded'?0:1};}
    case 'catalog':{
     const kind=values.kind??'components';if(!['components','actions','themes','recipes','all'].includes(String(kind)))fail('CATALOG_KIND','kind',`Unknown catalog kind: ${kind}`,2);
     const selected=(name:string)=>kind===name||kind==='all';data={status:'succeeded',...(selected('components')?{components:listComponents()}:{}),...(selected('actions')?{actions:listActions()}:{}),...(selected('themes')?{themes:listThemes()}:{}),...(selected('recipes')?{recipes}: {})};break;
@@ -68,6 +73,6 @@ export async function execute(args:string[]):Promise<{data:unknown;exitCode:numb
   return {data,exitCode:0};
  }catch(e){return failure(e);}
 }
-if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
+if(process.argv[1]&&await realpath(process.argv[1])===fileURLToPath(import.meta.url)){
  const result=await execute(process.argv.slice(2));output(result.data,process.argv.includes('--json'));process.exitCode=result.exitCode;
 }
