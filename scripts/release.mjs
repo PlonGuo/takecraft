@@ -10,6 +10,16 @@ import {assertSamePackage,shouldAdvance} from './release-policy.mjs';
 const exec=promisify(execFile);
 const repository='PlonGuo/takecraft',registry='https://registry.npmjs.org';
 
+export async function waitForPublished(read,{now=Date.now,sleep=ms=>new Promise(r=>setTimeout(r,ms)),timeoutMs=180000}={}){
+ const deadline=now()+timeoutMs;let delay=2000;
+ for(;;){
+  const info=await read();if(info)return info;
+  const remaining=deadline-now();
+  if(remaining<=0)throw new Error('Published version not readable after registry propagation wait; rerun this release');
+  await sleep(Math.min(delay,remaining));delay=Math.min(delay*2,15000);
+ }
+}
+
 export async function publishRelease(expected,io){
  const existing=await io.getPackage();if(existing)assertSamePackage(expected,existing);
  const tag=await io.getTag();assert(tag===null||tag===expected.sourceCommit,'Existing Git tag points at another commit');
@@ -83,7 +93,7 @@ async function main(){
   const result=await publishRelease(expected,{
    getPackage:download,
    async publish(){await exec('npm',['publish',archive,'--access','public','--tag','pending','--provenance','--registry',registry],{timeout:180000,maxBuffer:2**20});},
-   async verifyDownload(){for(let attempt=0;attempt<3;attempt++){const info=await download();if(info)return info;await new Promise(r=>setTimeout(r,2000));}throw new Error('Published version not readable');},
+   verifyDownload:()=>waitForPublished(download),
    async smoke(){await exec(process.execPath,['scripts/smoke-package.mjs',downloaded],{timeout:240000,maxBuffer:4*2**20});},
    async getNpmLatest(){return (await metadata('latest'))?.version??null;},
    async promote(){await exec('npm',['dist-tag','add',`takecraft@${expected.version}`,'latest','--registry',registry]);},

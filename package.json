@@ -1,6 +1,6 @@
 {
   "name": "takecraft",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "type": "module",
   "engines": {
     "node": ">=22.20.0"
@@ -17,7 +17,8 @@
     "test:unit": "vitest run tests/unit",
     "test:browser": "vitest run tests/browser",
     "test:e2e": "vitest run tests/e2e",
-    "prepack": "pnpm run build"
+    "prepack": "pnpm run build",
+    "test:quick": "vitest run tests/unit tests/browser tests/e2e/cli.test.ts tests/e2e/compose.test.ts tests/e2e/installer.test.ts tests/e2e/skill-launcher.test.ts tests/e2e/render.test.ts tests/e2e/quality.test.ts tests/e2e/launcher.test.ts"
   },
   "dependencies": {
     "@fontsource/noto-sans-sc": "5.3.1",
